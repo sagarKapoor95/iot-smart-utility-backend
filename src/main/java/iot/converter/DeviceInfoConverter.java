@@ -41,8 +41,8 @@ public final class DeviceInfoConverter {
      */
     public static HubAndDeviceMappingEntity toHubAndDeviceInfoEntity(String hubId, String deviceid) {
         return HubAndDeviceMappingEntity.builder()
-                .setDeviceId(hubId)
-                .setHubId(deviceid)
+                .setDeviceId(deviceid)
+                .setHubId(hubId)
                 .build();
     }
 
@@ -65,13 +65,13 @@ public final class DeviceInfoConverter {
      * @param request the request
      * @return the device info entity
      */
-    public static DeviceInfoEntity toDeviceInfoEntity(RegisterDeviceRequest request) {
+    public static DeviceInfoEntity toDeviceInfoEntity(String hubId, RegisterDeviceRequest request) {
         return DeviceInfoEntity.builder()
                 .setId(JavaUtil.getSaltString(8))
                 .setName(request.getName())
-                .setHubId(request.getHubId())
+                .setHubId(hubId)
                 .setCreatedAt(Instant.now().getEpochSecond())
-                .setStatus(Boolean.FALSE)
+                .setStatus(request.isStatus())
                 .setUpdatedAt(Instant.now().getEpochSecond())
                 .setType(request.getType())
                 .build();

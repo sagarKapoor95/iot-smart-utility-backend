@@ -32,7 +32,7 @@ public class RegisterCentralIoTHubController implements RequestHandler<APIGatewa
         final var response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
 
-        if (token == null || token.equals("") || this.signUpService.validateToken(token)) {
+        if (token == null || token.equals("") || !this.signUpService.validateToken(token)) {
             return new APIGatewayProxyResponseEvent()
                     .withHeaders(headers)
                     .withBody("Unauthorized user")

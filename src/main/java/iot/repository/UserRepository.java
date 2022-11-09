@@ -32,11 +32,15 @@ public class UserRepository {
      */
     public UserProfileEntity setUserDetails(UserProfileEntity userProfileEntity) {
 
-        final var item = new Item()
+        var item = new Item()
                 .withPrimaryKey("pk", userProfileEntity.getPk(), "sk", userProfileEntity.getSk())
                 .withString("user_name", userProfileEntity.getUserName())
                 .withString("password", userProfileEntity.getPassword())
                 .withString("token", userProfileEntity.getToken());
+
+        if (userProfileEntity.getName() != null) {
+            item = item.withString("name", userProfileEntity.getName());
+        }
 
         this.table.putItem(item);
         return userProfileEntity;

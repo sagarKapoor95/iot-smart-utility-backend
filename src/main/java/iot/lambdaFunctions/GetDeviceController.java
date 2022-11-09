@@ -29,7 +29,7 @@ public class GetDeviceController implements RequestHandler<APIGatewayProxyReques
         final var token = input.getHeaders().get("token");
         final var deviceInfo = this.deviceInfoRepository.getDeviceInfo(id);
 
-        if(token == null || token.equals("") || this.signUpService.validateToken(token)) {
+        if(token == null || token.equals("") || !this.signUpService.validateToken(token)) {
             return new APIGatewayProxyResponseEvent()
                     .withHeaders(headers)
                     .withBody("Unauthorized user")

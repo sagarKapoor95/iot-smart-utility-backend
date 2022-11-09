@@ -3,8 +3,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Timeout: 300
-      MemorySize: 1344
-      Handler: iot.lambdaFunctions.LoginController
+      MemorySize: 1024
+      Handler: iot.lambdaFunctions.CreateResourceUtilizationPlanController
       CodeUri: /Users/sagarkpr/IdeaProjects/iot-smart-utility-backend
       Runtime: java11
       Architectures:

@@ -6,9 +6,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.logs.model.ResourceAlreadyExistsException;
 import iot.configuration.AWSDynamoDbBean;
+import iot.exception.DeviceNotFoundException;
 import iot.repository.*;
 import iot.request.CreatePlanRequest;
-import iot.request.RegisterDeviceRequest;
+import iot.service.CentralIoTHubService;
+import iot.service.DeviceService;
 import iot.service.LoginSignUpService;
 import iot.service.ResourceUtilizationPlanService;
 import iot.utility.JsonUtil;
@@ -29,6 +31,7 @@ public class CreateResourceUtilizationPlanController implements RequestHandler<A
      * The Sign up service.
      */
     LoginSignUpService signUpService;
+
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input,
                                                       final Context context) {
         init();
@@ -36,9 +39,9 @@ public class CreateResourceUtilizationPlanController implements RequestHandler<A
         final var token = input.getHeaders().get("token");
         final var response = new APIGatewayProxyResponseEvent().withHeaders(headers);
         final var request = JsonUtil.deSerialize(input.getBody(), CreatePlanRequest.class);
-        final var id = input.getPathParameters().get("id");
+        final var id = input.getPathParameters().get("deviceId");
 
-        if (token == null || token.equals("") || this.signUpService.validateToken(token)) {
+        if (token == null || token.equals("") || !this.signUpService.validateToken(token)) {
             return new APIGatewayProxyResponseEvent()
                     .withHeaders(headers)
                     .withBody("Unauthorized user")
@@ -56,6 +59,11 @@ public class CreateResourceUtilizationPlanController implements RequestHandler<A
             return new APIGatewayProxyResponseEvent()
                     .withHeaders(headers)
                     .withBody("utilization plan not found")
+                    .withStatusCode(HttpStatus.SC_NOT_FOUND);
+        } catch (DeviceNotFoundException e) {
+            return new APIGatewayProxyResponseEvent()
+                    .withHeaders(headers)
+                    .withBody(e.getMessage())
                     .withStatusCode(HttpStatus.SC_NOT_FOUND);
         } catch (Exception e) {
             final var body = Map.of("body", "internal server error",
@@ -78,7 +86,14 @@ public class CreateResourceUtilizationPlanController implements RequestHandler<A
         final var table = AWSDynamoDbBean.connectDynamoDB();
         final var userRepository = new UserRepository(table);
         final var repository = new ResourceUtilizationPlanRepository(table);
-        this.resourceUtilizationPlanService = new ResourceUtilizationPlanService(repository);
+        UserAndCentralIoTHubMappingRepo userAndCentralIoTHubMappingRepo = new UserAndCentralIoTHubMappingRepo(table);
+        CentralIoTHubRepository centralIoTHubRepository = new CentralIoTHubRepository(table);
+        final var centralIoTHubService =
+                new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository, signUpService, null, null);
+        final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
         this.signUpService = new LoginSignUpService(userRepository);
+        final var deviceService =
+                new DeviceService(new DeviceInfoRepository(table), centralIoTHubService, hubAndDeviceMappingRepository);
+        this.resourceUtilizationPlanService = new ResourceUtilizationPlanService(repository, deviceService);
     }
 }

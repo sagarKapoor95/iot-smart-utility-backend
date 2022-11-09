@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 public class SignUpRequest {
     private final String userName;
     private final String password;
+    private final String name;
 
     /**
      * Instantiates a new Sign up request.
@@ -19,6 +20,16 @@ public class SignUpRequest {
     public SignUpRequest(Builder builder) {
         this.userName = builder.userName;
         this.password = builder.password;
+        this.name = builder.name;
+    }
+
+    /**
+     * Gets name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -55,6 +66,7 @@ public class SignUpRequest {
     public static final class Builder {
         private String userName;
         private String password;
+        private String name;
 
         private Builder() {
         }
@@ -67,6 +79,17 @@ public class SignUpRequest {
          */
         public Builder setUserName(String userName) {
             this.userName = userName;
+            return this;
+        }
+
+        /**
+         * Sets name.
+         *
+         * @param name the name
+         * @return the name
+         */
+        public Builder setName(String name) {
+            this.name = name;
             return this;
         }
 

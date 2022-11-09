@@ -37,15 +37,18 @@ public class ResourceUtilizationPlanRepository {
      * @return the resource utilization plan entity
      */
     public ResourceUtilizationPlanEntity saveResourceUtilizationPlanEntity(ResourceUtilizationPlanEntity entity) {
-        final var item = new Item()
+        var item = new Item()
                 .withPrimaryKey("pk", entity.getPk(), "sk", entity.getSk())
                 .withString("device_id", entity.getDeviceId())
                 .withString("id", entity.getId())
                 .withString("name", entity.getName())
                 .withString("type", entity.getType().name())
                 .withNumber("start_time", entity.getStartTimestamp())
-                .withNumber("end_time", entity.getEndTimestamp())
                 .withNumber("total_unit", entity.getTotalUnit());
+
+        if (entity.getEndTimestamp() != null) {
+            item = item.withNumber("end_time", entity.getEndTimestamp());
+        }
 
         this.table.putItem(item);
         return entity;

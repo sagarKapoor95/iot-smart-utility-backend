@@ -3,6 +3,7 @@ package iot.service;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import iot.converter.ResourcePlanUtilizationConverter;
 import iot.entity.ResourceUtilizationPlanEntity;
+import iot.exception.DeviceNotFoundException;
 import iot.exception.UtilizationPlanException;
 import iot.repository.ResourceUtilizationPlanRepository;
 import iot.request.CreatePlanRequest;
@@ -12,14 +13,16 @@ import iot.request.CreatePlanRequest;
  */
 public class ResourceUtilizationPlanService {
     private final ResourceUtilizationPlanRepository repository;
+    private final DeviceService deviceService;
 
     /**
      * Instantiates a new Resource utilization plan service.
      *
      * @param repository the repository
      */
-    public ResourceUtilizationPlanService(ResourceUtilizationPlanRepository repository) {
+    public ResourceUtilizationPlanService(ResourceUtilizationPlanRepository repository, DeviceService deviceService) {
         this.repository = repository;
+        this.deviceService = deviceService;
     }
 
     /**
@@ -29,7 +32,14 @@ public class ResourceUtilizationPlanService {
      * @param request  the request
      * @return the resource utilization plan entity
      */
-    public ResourceUtilizationPlanEntity createResourceUtilizationPlan(String deviceId, CreatePlanRequest request) {
+    public ResourceUtilizationPlanEntity createResourceUtilizationPlan(String deviceId, CreatePlanRequest request)
+    throws DeviceNotFoundException{
+        final var deviceDetails = deviceService.getDevice(deviceId);
+
+        if(deviceDetails == null) {
+            throw new DeviceNotFoundException("device not found");
+        }
+
         final var entity =
                 ResourcePlanUtilizationConverter.toResourcePlanUtilizationEntity(deviceId, request);
 
@@ -44,10 +54,11 @@ public class ResourceUtilizationPlanService {
      * @throws UtilizationPlanException the utilization plan exception
      */
     public ResourceUtilizationPlanEntity getResourceUtilizationPlanEntity(String deviceId)
-            throws UtilizationPlanException{
+            throws UtilizationPlanException {
         final var entity = repository.getResourceUtilizationPlanEntity(deviceId);
+
         if (entity == null) {
-            throw new UtilizationPlanException("utilization plan nout found");
+            throw new UtilizationPlanException("utilization plan not found");
         }
 
         return entity;
