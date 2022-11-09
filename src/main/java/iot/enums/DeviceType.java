@@ -7,17 +7,21 @@ public enum DeviceType {
     /**
      * Electricity meter device type.
      */
-    ELECTRICITY_METER,
+    ELECTRICITY_METER("m3"),
     /**
      * Water meter device type.
      */
-    WATER_METER,
+    WATER_METER("m3"),
     /**
      * Wifi meter device type.
      */
-    WIFI_METER,
+    WIFI_METER("m3"),
     /**
      * Gas meter device type.
      */
-    GAS_METER
+    GAS_METER("m3");
+
+    DeviceType(String unit) {
+
+    }
 }
