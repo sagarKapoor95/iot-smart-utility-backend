@@ -40,12 +40,13 @@ public final class ResourcePlanUtilizationConverter {
      * @return the resource utilization plan entity
      */
     public static ResourceUtilizationPlanEntity toResourcePlanUtilizationEntity(Item item) {
+        var endDate = item.get("end_time") == null ? null : item.getLong("end_time");
 
         return ResourceUtilizationPlanEntity.builder()
                 .setDeviceId(item.getString("device_id"))
                 .setId(item.getString("id"))
                 .setName(item.getString("name"))
-                .setEndTimestamp(item.getLong("end_time"))
+                .setEndTimestamp(endDate)
                 .setStartTimestamp(item.getLong("start_time"))
                 .setType(PlanType.valueOf(item.getString("type")))
                 .setTotalUnit(item.getLong("total_unit"))

@@ -29,6 +29,7 @@ public class GetResourceUtilizationPlanController implements RequestHandler<APIG
      * The Sign up service.
      */
     LoginSignUpService signUpService;
+
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input,
                                                       final Context context) {
         init();
@@ -38,6 +39,7 @@ public class GetResourceUtilizationPlanController implements RequestHandler<APIG
         final var id = input.getPathParameters().get("deviceId");
 
         if (token == null || token.equals("") || !this.signUpService.validateToken(token)) {
+
             return new APIGatewayProxyResponseEvent()
                     .withHeaders(headers)
                     .withBody("Unauthorized user")
@@ -45,8 +47,11 @@ public class GetResourceUtilizationPlanController implements RequestHandler<APIG
         }
 
         try {
-            final var devices = resourceUtilizationPlanService.getResourceUtilizationPlanEntity(id);
+            final var devices =
+                    resourceUtilizationPlanService.getResourceUtilizationPlanEntity(id);
+
             final var body = JsonUtil.serialize(devices);
+
             return response
                     .withBody(body)
                     .withStatusCode(200);
@@ -83,7 +88,7 @@ public class GetResourceUtilizationPlanController implements RequestHandler<APIG
         final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
         this.signUpService = new LoginSignUpService(userRepository);
         final var deviceService =
-                new DeviceService(new DeviceInfoRepository(table), centralIoTHubService, hubAndDeviceMappingRepository) ;
+                new DeviceService(new DeviceInfoRepository(table), centralIoTHubService, hubAndDeviceMappingRepository);
         this.resourceUtilizationPlanService = new ResourceUtilizationPlanService(repository, deviceService);
     }
 }
