@@ -5,10 +5,14 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import iot.converter.DeviceInfoConverter;
-import iot.repository.DeviceInfoRepository;
+import iot.repository.*;
 import iot.request.RegisterDeviceRequest;
 import iot.configuration.AWSDynamoDbBean;
+import iot.service.CentralIoTHubService;
+import iot.service.DeviceService;
+import iot.service.LoginSignUpService;
 import iot.utility.JsonUtil;
+import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,20 +20,28 @@ import java.util.Map;
 /**
  * The Register device controller.
  */
-public class RegisterDeviceController implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private DeviceInfoRepository deviceInfoRepository;
+public class RegisterDeviceController implements RequestHandler<APIGatewayProxyRequestEvent,
+        APIGatewayProxyResponseEvent> {
+    private DeviceService deviceService;
+    private LoginSignUpService signUpService;
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         init();
         Map<String, String> headers = getHeaders();
         final var request = JsonUtil.deSerialize(input.getBody(), RegisterDeviceRequest.class);
-        final var deviceInfoEntity = DeviceInfoConverter.toDeviceInfoEntity(request);
-        final var deviceInfo = this.deviceInfoRepository.saveDeviceInfo(deviceInfoEntity);
-
         final var response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
+        final var token = input.getHeaders().get("token");
+
+        if(token == null || token == "" || this.signUpService.validateToken(token)) {
+            return new APIGatewayProxyResponseEvent()
+                    .withHeaders(headers)
+                    .withBody("Unauthorized user")
+                    .withStatusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
 
         try {
+            final var deviceInfo = this.deviceService.registerDevice(request);
             final var body =  JsonUtil.serialize(deviceInfo);
             return response
                     .withBody(body)
@@ -53,6 +65,14 @@ public class RegisterDeviceController implements RequestHandler<APIGatewayProxyR
 
     private void init() {
         final var table = AWSDynamoDbBean.connectDynamoDB();
-        this.deviceInfoRepository = new DeviceInfoRepository(table);
+        UserAndCentralIoTHubMappingRepo userAndCentralIoTHubMappingRepo = new UserAndCentralIoTHubMappingRepo(table);
+        CentralIoTHubRepository centralIoTHubRepository = new CentralIoTHubRepository(table);
+        final var centralIoTHubService =
+                new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository, signUpService, null, null);
+        final var userRepository = new UserRepository(table);
+        final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
+        this.signUpService = new LoginSignUpService(userRepository);
+        this.deviceService =
+                new DeviceService(new DeviceInfoRepository(table), centralIoTHubService, hubAndDeviceMappingRepository) ;
     }
 }

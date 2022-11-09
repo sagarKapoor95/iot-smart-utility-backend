@@ -6,7 +6,7 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import iot.converter.DeviceInfoConverter;
 import iot.entity.DeviceInfoEntity;
 
-import static iot.constant.constant.DEVICE_INFO_PK_PREFIX;
+import static iot.constant.constant.DEVICE_PREFIX;
 import static iot.constant.constant.DEVICE_INFO_SK_PREFIX;
 
 /**
@@ -33,6 +33,7 @@ public class DeviceInfoRepository {
     public DeviceInfoEntity saveDeviceInfo(DeviceInfoEntity deviceInfoEntity) {
         final var item = new Item()
                 .withPrimaryKey("pk", deviceInfoEntity.getPk(), "sk", deviceInfoEntity.getSk())
+                .withString("hub_id", deviceInfoEntity.getHubId())
                 .withString("device_type", deviceInfoEntity.getType().name())
                 .withString("device_id", deviceInfoEntity.getId())
                 .withString("device_name", deviceInfoEntity.getName())
@@ -45,14 +46,14 @@ public class DeviceInfoRepository {
     }
 
     /**
-     * Gets device info.
+     * Gets device info.saveDeviceInfo
      *
      * @param deviceId the device id
      * @return the device info
      */
     public DeviceInfoEntity getDeviceInfo(String deviceId) {
         final var item =
-                this.table.getItem(new PrimaryKey("pk", DEVICE_INFO_PK_PREFIX + deviceId, "sk", DEVICE_INFO_SK_PREFIX));
+                this.table.getItem(new PrimaryKey("pk", DEVICE_PREFIX + deviceId, "sk", DEVICE_INFO_SK_PREFIX));
 
         if (item == null) {
             return null;

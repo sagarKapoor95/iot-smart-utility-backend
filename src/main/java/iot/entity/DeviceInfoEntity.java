@@ -1,15 +1,18 @@
 package iot.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import iot.enums.DeviceType;
 import org.apache.http.util.Asserts;
 
-import static iot.constant.constant.DEVICE_INFO_PK_PREFIX;
+import static iot.constant.constant.DEVICE_PREFIX;
 import static iot.constant.constant.DEVICE_INFO_SK_PREFIX;
 
 /**
  * The Device info entity.
  */
+@JsonDeserialize(builder = DeviceInfoEntity.Builder.class)
 public class DeviceInfoEntity {
     private final String id;
     private final DeviceType type;
@@ -17,6 +20,7 @@ public class DeviceInfoEntity {
     private final boolean status;
     private final Long createdAt;
     private final Long updatedAt;
+    private final String hubId;
 
     /**
      * Instantiates a new Device info entity.
@@ -32,6 +36,16 @@ public class DeviceInfoEntity {
         this.status = builder.status;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
+        this.hubId = builder.hubId;
+    }
+
+    /**
+     * Gets hub id.
+     *
+     * @return the hub id
+     */
+    public String getHubId() {
+        return hubId;
     }
 
     /**
@@ -41,7 +55,7 @@ public class DeviceInfoEntity {
      */
     @JsonIgnore
     public String getPk() {
-        return DEVICE_INFO_PK_PREFIX + this.id;
+        return DEVICE_PREFIX + this.id;
     }
 
     /**
@@ -120,6 +134,7 @@ public class DeviceInfoEntity {
     /**
      * The type Builder.
      */
+    @JsonPOJOBuilder(withPrefix = "set")
     public static final class Builder {
         private String pk;
         private String sk;
@@ -129,6 +144,7 @@ public class DeviceInfoEntity {
         private String id;
         private Long createdAt;
         private Long updatedAt;
+        private String hubId;
 
         private Builder() {
         }
@@ -161,6 +177,17 @@ public class DeviceInfoEntity {
          */
         public Builder setId(String id) {
             this.id = id;
+            return this;
+        }
+
+        /**
+         * Sets hub id.
+         *
+         * @param hubId the hub id
+         * @return the hub id
+         */
+        public Builder setHubId(String hubId) {
+            this.hubId = hubId;
             return this;
         }
 

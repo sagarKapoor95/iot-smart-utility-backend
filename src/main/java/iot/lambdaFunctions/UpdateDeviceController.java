@@ -7,8 +7,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import iot.configuration.AWSDynamoDbBean;
 import iot.converter.DeviceInfoConverter;
 import iot.repository.DeviceInfoRepository;
+import iot.repository.UserRepository;
 import iot.request.UpdateDeviceRequest;
+import iot.service.LoginSignUpService;
 import iot.utility.JsonUtil;
+import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +21,7 @@ import java.util.Map;
  */
 public class UpdateDeviceController implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
     private DeviceInfoRepository deviceInfoRepository;
+    private LoginSignUpService signUpService;
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         init();
@@ -25,6 +29,15 @@ public class UpdateDeviceController implements RequestHandler<APIGatewayProxyReq
         final var request = JsonUtil.deSerialize(input.getBody(), UpdateDeviceRequest.class);
         assert request != null;
         var deviceInfoEntity = deviceInfoRepository.getDeviceInfo(request.getId());
+
+        final var token = input.getHeaders().get("token");
+
+        if(token == null || token == "" || this.signUpService.validateToken(token)) {
+            return new APIGatewayProxyResponseEvent()
+                    .withHeaders(headers)
+                    .withBody("Unauthorized user")
+                    .withStatusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
 
         if (deviceInfoEntity == null) {
             return new APIGatewayProxyResponseEvent()
@@ -64,5 +77,7 @@ public class UpdateDeviceController implements RequestHandler<APIGatewayProxyReq
     private void init() {
         final var table = AWSDynamoDbBean.connectDynamoDB();
         this.deviceInfoRepository = new DeviceInfoRepository(table);
+        final var userRepository = new UserRepository(table);
+        this.signUpService = new LoginSignUpService(userRepository);
     }
 }
