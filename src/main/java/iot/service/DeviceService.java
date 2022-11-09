@@ -37,11 +37,11 @@ public class DeviceService {
      * @return the device info entity
      * @throws CentralHubNotFoundException the central hub not found exception
      */
-    public DeviceInfoEntity registerDevice(RegisterDeviceRequest request)
+    public DeviceInfoEntity registerDevice(String hubId, RegisterDeviceRequest request)
             throws CentralHubNotFoundException {
-        final var centralHub = centralIoTHubService.getCentralIoTHub(request.getHubId());
+        final var centralHub = centralIoTHubService.getCentralIoTHub(hubId);
 
-        final var deviceInfoEntity = DeviceInfoConverter.toDeviceInfoEntity(request);
+        final var deviceInfoEntity = DeviceInfoConverter.toDeviceInfoEntity(hubId, request);
         final var hubAndDeviceMappingEntity =
                 DeviceInfoConverter.toHubAndDeviceInfoEntity(centralHub.getId(), deviceInfoEntity.getId());
 

@@ -5,6 +5,7 @@ import iot.converter.UserProfileConverter;
 import iot.entity.UserProfileEntity;
 import iot.entity.UserTokenEntity;
 import iot.repository.UserRepository;
+import iot.request.SignUpRequest;
 import iot.utility.JavaUtil;
 
 import java.time.Instant;
@@ -28,16 +29,15 @@ public class LoginSignUpService {
     /**
      * Sign up user token entity.
      *
-     * @param userName the user name
-     * @param password the password
+     * @param request the request
      * @return the user token entity
      */
-    public UserTokenEntity signUp(String userName, String password) {
-        if (userRepository.getUserDetails(userName, password) != null) {
+    public UserTokenEntity signUp(SignUpRequest request) {
+        if (userRepository.getUserDetails(request.getUserName(), request.getPassword()) != null) {
             return null;
         }
 
-        final var user = addUser(userName, password);
+        final var user = addUser(request.getUserName(), request.getPassword(), request.getName());
         return addToken(user);
     }
 
@@ -49,11 +49,12 @@ public class LoginSignUpService {
      * @return the user token entity
      */
     public UserTokenEntity login(String userName, String password) {
-        if (userRepository.getUserDetails(userName, password) == null) {
+        final var userDetails = userRepository.getUserDetails(userName, password);
+        if (userDetails == null) {
             return null;
         }
 
-        final var user = addUser(userName, password);
+        final var user = addUser(userName, password, userDetails.getName());
         return addToken(user);
     }
 
@@ -90,10 +91,10 @@ public class LoginSignUpService {
         return userRepository.setUserToken(token);
     }
 
-    private UserProfileEntity addUser(String userName, String password) {
+    private UserProfileEntity addUser(String userName, String password, String name) {
 
         final var token = JavaUtil.getSaltString(8);
-        final var user = UserProfileConverter.toUserProfileEntity(userName, password, token);
+        final var user = UserProfileConverter.toUserProfileEntity(userName, password, token, name);
         return userRepository.setUserDetails(user);
     }
 }

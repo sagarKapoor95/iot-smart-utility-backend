@@ -90,6 +90,33 @@ public class CentralIoTHubService {
     }
 
     /**
+     * Gets all devices for hub.
+     *
+     * @param id the id
+     * @return the all devices for hub
+     * @throws CentralHubNotFoundException the central hub not found exception
+     */
+    public GetAllDevicesResponse getAllDevicesForHub(String id) throws CentralHubNotFoundException{
+        final var hub = centralIoTHubRepository.getCentralIoTHubDetails(id);
+        var deviceList = new ArrayList<DeviceInfoEntity>();
+        if(hub == null) {
+            throw new CentralHubNotFoundException("central hub not found");
+        }
+
+        final var devices =
+                hubAndDeviceMappingRepository.getAllDevicesForHub(hub.getId());
+
+        for (final var deviceId : devices) {
+            final var device = deviceService.getDevice(deviceId.getDeviceId());
+            deviceList.add(device);
+        }
+        return GetAllDevicesResponse.builder()
+                .setDevices(deviceList)
+                .setHubDetails(hub)
+                .build();
+    }
+
+    /**
      * Gets all devices.
      *
      * @param token the token
@@ -111,22 +138,12 @@ public class CentralIoTHubService {
 
 
         for (final var hubId : hubs) {
-            final var hub = centralIoTHubRepository.getCentralIoTHubDetails(hubId.getHubId());
-            var deviceList = new ArrayList<DeviceInfoEntity>();
-            if(hub == null) {
-                throw new CentralHubNotFoundException("central hub not found");
-            }
-
-            final var devices =
-                    hubAndDeviceMappingRepository.getAllDevicesForHub(hub.getId());
-
-            for (final var deviceId : devices) {
-                final var device = deviceService.getDevice(deviceId.getDeviceId());
-                deviceList.add(device);
-            }
-            response.add(GetAllDevicesResponse.builder().setDevices(deviceList).setHubDetails(hub).build());
+            final var devicesForCentralHub = getAllDevicesForHub(hubId.getHubId());
+            response.add(devicesForCentralHub);
         }
 
         return response;
     }
+
+
 }

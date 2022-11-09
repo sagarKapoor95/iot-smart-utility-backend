@@ -61,8 +61,8 @@ public final class CentralIoTHubConverter {
      */
     public static UserCentralIoTHubMappingEntity toUserCentralIoTHubMappingEntity(Item item) {
         return UserCentralIoTHubMappingEntity.builder()
-                .setHubId(item.get("user_name").toString())
-                .setUserId(item.get("hub_id").toString())
+                .setHubId(item.get("hub_id").toString())
+                .setUserId(item.get("user_id").toString())
                 .build();
     }
 }

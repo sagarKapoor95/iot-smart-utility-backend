@@ -29,7 +29,7 @@ public class GetAllDevicesController implements RequestHandler<APIGatewayProxyRe
         final var token = input.getHeaders().get("token");
         final var response = new APIGatewayProxyResponseEvent().withHeaders(headers);
 
-        if (token == null || token.equals("") || this.signUpService.validateToken(token)) {
+        if (token == null || token.equals("") || !this.signUpService.validateToken(token)) {
             return new APIGatewayProxyResponseEvent()
                     .withHeaders(headers)
                     .withBody("Unauthorized user")
@@ -73,10 +73,9 @@ public class GetAllDevicesController implements RequestHandler<APIGatewayProxyRe
         final var deviceService =
                 new DeviceService(deviceInfoRepository, null, hubAndDeviceMappingRepository);
         final var centralIoTHubRepository = new CentralIoTHubRepository(table);
-
+        this.signUpService = new LoginSignUpService(userRepository);
         this.centralIoTHubService =
                 new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository,
                         signUpService, deviceService, hubAndDeviceMappingRepository);
-        this.signUpService = new LoginSignUpService(userRepository);
     }
 }

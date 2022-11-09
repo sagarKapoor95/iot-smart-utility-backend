@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import iot.converter.DeviceInfoConverter;
+import iot.exception.CentralHubNotFoundException;
 import iot.repository.*;
 import iot.request.RegisterDeviceRequest;
 import iot.configuration.AWSDynamoDbBean;
@@ -27,13 +28,14 @@ public class RegisterDeviceController implements RequestHandler<APIGatewayProxyR
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         init();
-        Map<String, String> headers = getHeaders();
+        final var headers = getHeaders();
         final var request = JsonUtil.deSerialize(input.getBody(), RegisterDeviceRequest.class);
         final var response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
         final var token = input.getHeaders().get("token");
+        final var hubId = input.getPathParameters().get("hubId");
 
-        if(token == null || token == "" || this.signUpService.validateToken(token)) {
+        if(token == null || token.equals("") || !this.signUpService.validateToken(token)) {
             return new APIGatewayProxyResponseEvent()
                     .withHeaders(headers)
                     .withBody("Unauthorized user")
@@ -41,11 +43,16 @@ public class RegisterDeviceController implements RequestHandler<APIGatewayProxyR
         }
 
         try {
-            final var deviceInfo = this.deviceService.registerDevice(request);
+            final var deviceInfo = this.deviceService.registerDevice(hubId, request);
             final var body =  JsonUtil.serialize(deviceInfo);
             return response
                     .withBody(body)
                     .withStatusCode(200);
+        } catch (CentralHubNotFoundException e) {
+            return new APIGatewayProxyResponseEvent()
+                    .withHeaders(headers)
+                    .withBody(e.getMessage())
+                    .withStatusCode(HttpStatus.SC_BAD_REQUEST);
         } catch (Exception e) {
             final var body = Map.of("body", "internal server error",
                     "error", e.toString());

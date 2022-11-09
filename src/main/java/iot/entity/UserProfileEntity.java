@@ -13,6 +13,11 @@ public class UserProfileEntity {
     private final String userName;
     private final String password;
     private final String token;
+    private final String name;
+
+    public String getName() {
+        return name;
+    }
 
     /**
      * Instantiates a new User profile entity.
@@ -23,6 +28,7 @@ public class UserProfileEntity {
         this.userName = builder.userName;
         this.password = builder.password;
         this.token = builder.token;
+        this.name = builder.name;
     }
 
     /**
@@ -90,6 +96,7 @@ public class UserProfileEntity {
         private String userName;
         private String password;
         private String token;
+        private String name;
 
         private Builder() {
         }
@@ -101,6 +108,11 @@ public class UserProfileEntity {
          * @return the pk
          */
         public Builder setPk(String pk) {
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
             return this;
         }
 

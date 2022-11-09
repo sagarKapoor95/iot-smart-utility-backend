@@ -20,6 +20,7 @@ public final class UserProfileConverter {
                 .setToken(item.getString("token"))
                 .setUserName(item.getString("user_name"))
                 .setPassword(item.getString("password"))
+                .setName(item.getString("name"))
                 .build();
     }
 
@@ -31,11 +32,12 @@ public final class UserProfileConverter {
      * @param token    the token
      * @return the user profile entity
      */
-    public static UserProfileEntity toUserProfileEntity(String userName, String password, String token) {
+    public static UserProfileEntity toUserProfileEntity(String userName, String password, String token, String name) {
         return UserProfileEntity.builder()
                 .setToken(token)
                 .setUserName(userName)
                 .setPassword(password)
+                .setName(name)
                 .build();
     }
 
@@ -49,8 +51,8 @@ public final class UserProfileConverter {
         return UserTokenEntity.builder()
                 .setToken(item.getString("token"))
                 .setUserName(item.getString("user_name"))
-                .setPassword(item.getString("password"))
                 .setExpiry(item.getNumber("expiry").longValue())
+                .setPassword(item.getString("password"))
                 .build();
     }
 

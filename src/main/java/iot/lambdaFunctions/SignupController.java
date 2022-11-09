@@ -24,7 +24,7 @@ public class SignupController implements RequestHandler<APIGatewayProxyRequestEv
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         init();
         final var request = JsonUtil.deSerialize(input.getBody(), SignUpRequest.class);
-        final var token = this.signUpService.signUp(request.getUserName(), request.getPassword());
+        final var token = this.signUpService.signUp(request);
         final var headers = getHeaders();
 
         if (token == null) {

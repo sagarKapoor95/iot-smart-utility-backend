@@ -25,14 +25,14 @@ public class UpdateDeviceController implements RequestHandler<APIGatewayProxyReq
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         init();
-        Map<String, String> headers = getHeaders();
+        final var headers = getHeaders();
         final var request = JsonUtil.deSerialize(input.getBody(), UpdateDeviceRequest.class);
         assert request != null;
         var deviceInfoEntity = deviceInfoRepository.getDeviceInfo(request.getId());
 
         final var token = input.getHeaders().get("token");
 
-        if(token == null || token == "" || this.signUpService.validateToken(token)) {
+        if(token == null || token.equals("") || !this.signUpService.validateToken(token)) {
             return new APIGatewayProxyResponseEvent()
                     .withHeaders(headers)
                     .withBody("Unauthorized user")

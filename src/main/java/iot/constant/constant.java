@@ -38,4 +38,8 @@ public final class constant {
      * The constant USER_PROFILE_SK_PREFIX.
      */
     public static String USER_PROFILE_SK_PREFIX = "password#";
+    /**
+     * The constant RESOURCE_UTILIZATION_PLAN_KEY_PREFIX.
+     */
+    public static String RESOURCE_UTILIZATION_PLAN_KEY_PREFIX = "plan#";
 }
