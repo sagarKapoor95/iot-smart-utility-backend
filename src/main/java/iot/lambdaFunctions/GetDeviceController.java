@@ -6,7 +6,11 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import iot.configuration.AWSDynamoDbBean;
 import iot.repository.DeviceInfoRepository;
+import iot.repository.UserRepository;
+import iot.service.LoginSignUpService;
 import iot.utility.JsonUtil;
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,13 +20,21 @@ import java.util.Map;
  */
 public class GetDeviceController implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
     private DeviceInfoRepository deviceInfoRepository;
+    private LoginSignUpService signUpService;
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         init();
-        Map<String, String> headers = getHeaders();
-        System.out.println(input);
+        final var headers = getHeaders();
         final var id = input.getPathParameters().get("id");
+        final var token = input.getHeaders().get("token");
         final var deviceInfo = this.deviceInfoRepository.getDeviceInfo(id);
+
+        if(token == null || token.equals("") || this.signUpService.validateToken(token)) {
+            return new APIGatewayProxyResponseEvent()
+                    .withHeaders(headers)
+                    .withBody("Unauthorized user")
+                    .withStatusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
 
         if (deviceInfo == null) {
             return new APIGatewayProxyResponseEvent()
@@ -58,6 +70,8 @@ public class GetDeviceController implements RequestHandler<APIGatewayProxyReques
 
     private void init() {
         final var table = AWSDynamoDbBean.connectDynamoDB();
+        final var userRepository = new UserRepository(table);
+        this.signUpService = new LoginSignUpService(userRepository);
         this.deviceInfoRepository = new DeviceInfoRepository(table);
     }
 }

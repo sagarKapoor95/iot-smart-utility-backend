@@ -3,9 +3,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Timeout: 300
-      MemorySize: 1088
-      Handler: iot.lambdaFunctions.RegisterDeviceController
-      CodeUri: /Users/sagarkpr/IdeaProjects/HelloWorldFunction
+      MemorySize: 1344
+      Handler: iot.lambdaFunctions.LoginController
+      CodeUri: /Users/sagarkpr/IdeaProjects/iot-smart-utility-backend
       Runtime: java11
       Architectures:
         - x86_64

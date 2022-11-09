@@ -10,6 +10,7 @@ import org.apache.http.util.Asserts;
  */
 @JsonDeserialize(builder = RegisterDeviceRequest.Builder.class)
 public class RegisterDeviceRequest {
+    private final String hubId;
     private final DeviceType type;
     private final String name;
     private final boolean status;
@@ -25,6 +26,16 @@ public class RegisterDeviceRequest {
         this.type = builder.type;
         this.name = builder.name;
         this.status = builder.status;
+        this.hubId = builder.hubId;
+    }
+
+    /**
+     * Gets hub id.
+     *
+     * @return the hub id
+     */
+    public String getHubId() {
+        return hubId;
     }
 
     /**
@@ -71,6 +82,7 @@ public class RegisterDeviceRequest {
         private DeviceType type;
         private String name;
         private boolean status;
+        private String hubId;
 
         /**
          * Sets type.
@@ -80,6 +92,17 @@ public class RegisterDeviceRequest {
          */
         public Builder setType(DeviceType type) {
             this.type = type;
+            return this;
+        }
+
+        /**
+         * Sets hub id.
+         *
+         * @param hubId the hub id
+         * @return the hub id
+         */
+        public Builder setHubId(String hubId) {
+            this.hubId = hubId;
             return this;
         }
 
