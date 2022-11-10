@@ -9,7 +9,7 @@ import static iot.constant.constant.DEVICE_PREFIX;
 import static iot.constant.constant.RESOURCE_UTILIZATION_PLAN_KEY_PREFIX;
 
 /**
- * The type Resource utilization plan entity.
+ * The Resource utilization plan entity.
  */
 @JsonDeserialize(builder = ResourceUtilizationPlanEntity.Builder.class)
 public class ResourceUtilizationPlanEntity {
