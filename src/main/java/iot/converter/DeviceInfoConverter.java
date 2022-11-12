@@ -1,12 +1,15 @@
 package iot.converter;
 
 import com.amazonaws.services.dynamodbv2.document.Item;
+import iot.bo.DevicesInfo;
 import iot.entity.DeviceInfoEntity;
+import iot.entity.DevicesInfoEntity;
 import iot.entity.HubAndDeviceMappingEntity;
 import iot.enums.DeviceType;
 import iot.request.RegisterDeviceRequest;
 import iot.request.UpdateDeviceRequest;
 import iot.utility.JavaUtil;
+import iot.utility.JsonUtil;
 
 import java.time.Instant;
 
@@ -92,6 +95,14 @@ public final class DeviceInfoConverter {
                 .setStatus(request.isStatus() != entity.isStatus() ? request.isStatus() : entity.isStatus())
                 .setUpdatedAt(Instant.now().getEpochSecond())
                 .setType(request.getType() == null ? entity.getType() : request.getType())
+                .build();
+    }
+
+    public static DevicesInfoEntity toDevicesInfoEntity(Item item) {
+        final var devicesInfo =
+                JsonUtil.deSerialize(item.getString("payload"), DevicesInfo.class);
+        return DevicesInfoEntity.builder()
+                .setDevicesInfo(devicesInfo)
                 .build();
     }
 }
