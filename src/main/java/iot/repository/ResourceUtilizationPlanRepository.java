@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import iot.converter.CentralIoTHubConverter;
 import iot.converter.DeviceInfoConverter;
 import iot.converter.ResourcePlanUtilizationConverter;

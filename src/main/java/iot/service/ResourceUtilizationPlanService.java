@@ -5,6 +5,7 @@ import iot.converter.ResourcePlanUtilizationConverter;
 import iot.entity.ResourceUtilizationPlanEntity;
 import iot.exception.DeviceNotFoundException;
 import iot.exception.UtilizationPlanException;
+import iot.repository.DeviceInfoRepository;
 import iot.repository.ResourceUtilizationPlanRepository;
 import iot.request.CreatePlanRequest;
 
@@ -13,14 +14,14 @@ import iot.request.CreatePlanRequest;
  */
 public class ResourceUtilizationPlanService {
     private final ResourceUtilizationPlanRepository repository;
-    private final DeviceService deviceService;
+    private final DeviceInfoRepository deviceService;
 
     /**
      * Instantiates a new Resource utilization plan service.
      *
      * @param repository the repository
      */
-    public ResourceUtilizationPlanService(ResourceUtilizationPlanRepository repository, DeviceService deviceService) {
+    public ResourceUtilizationPlanService(ResourceUtilizationPlanRepository repository, DeviceInfoRepository deviceService) {
         this.repository = repository;
         this.deviceService = deviceService;
     }
@@ -34,7 +35,7 @@ public class ResourceUtilizationPlanService {
      */
     public ResourceUtilizationPlanEntity createResourceUtilizationPlan(String deviceId, CreatePlanRequest request)
     throws DeviceNotFoundException{
-        final var deviceDetails = deviceService.getDevice(deviceId);
+        final var deviceDetails = deviceService.getDeviceInfo(deviceId);
 
         if(deviceDetails == null) {
             throw new DeviceNotFoundException("device not found");
@@ -62,5 +63,9 @@ public class ResourceUtilizationPlanService {
         }
 
         return entity;
+    }
+
+    public ResourceUtilizationPlanEntity getResourceUtilizationPlanEntity(ResourceUtilizationPlanEntity entity) {
+        return repository.saveResourceUtilizationPlanEntity(entity);
     }
 }
