@@ -7,7 +7,7 @@ import iot.converter.DeviceInfoConverter;
 import iot.entity.DeviceInfoEntity;
 
 import static iot.constant.constant.DEVICE_PREFIX;
-import static iot.constant.constant.DEVICE_INFO_SK_PREFIX;
+import static iot.constant.constant.DEVICE_INFO_KEY_PREFIX;
 
 /**
  * The Device info repository.
@@ -53,7 +53,7 @@ public class DeviceInfoRepository {
      */
     public DeviceInfoEntity getDeviceInfo(String deviceId) {
         final var item =
-                this.table.getItem(new PrimaryKey("pk", DEVICE_PREFIX + deviceId, "sk", DEVICE_INFO_SK_PREFIX));
+                this.table.getItem(new PrimaryKey("pk", DEVICE_PREFIX + deviceId, "sk", DEVICE_INFO_KEY_PREFIX));
 
         if (item == null) {
             return null;

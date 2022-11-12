@@ -10,3 +10,4 @@ aws lambda update-function-code --function-name IOT_get_resource_plan --zip-file
 aws lambda update-function-code --function-name IOT_register_central_iot_hub --zip-file fileb://build/distributions/iot-smart-utility-backend.zip --region us-east-1
 aws lambda update-function-code --function-name IOT_User_Signup --zip-file fileb://build/distributions/iot-smart-utility-backend.zip --region us-east-1
 aws lambda update-function-code --function-name IOT_User_Login --zip-file fileb://build/distributions/iot-smart-utility-backend.zip --region us-east-1
+aws lambda update-function-code --function-name IOT_register_device_data --zip-file fileb://build/distributions/iot-smart-utility-backend.zip --region us-east-1

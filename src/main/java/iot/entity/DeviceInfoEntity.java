@@ -7,7 +7,7 @@ import iot.enums.DeviceType;
 import org.apache.http.util.Asserts;
 
 import static iot.constant.constant.DEVICE_PREFIX;
-import static iot.constant.constant.DEVICE_INFO_SK_PREFIX;
+import static iot.constant.constant.DEVICE_INFO_KEY_PREFIX;
 
 /**
  * The Device info entity.
@@ -65,7 +65,7 @@ public class DeviceInfoEntity {
      */
     @JsonIgnore
     public String getSk() {
-        return DEVICE_INFO_SK_PREFIX;
+        return DEVICE_INFO_KEY_PREFIX;
     }
 
     /**
