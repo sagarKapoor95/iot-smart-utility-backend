@@ -8,7 +8,7 @@ import iot.enums.DeviceType;
 public class WaterMeterInfo extends DeviceInfo{
 
     public WaterMeterInfo(Builder builder) {
-        super(builder.id, builder.type, builder.consumption);
+        super(builder.id, DeviceType.WATER_METER, builder.consumption);
     }
 
     @JsonPOJOBuilder(withPrefix = "set")

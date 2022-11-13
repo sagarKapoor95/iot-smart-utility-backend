@@ -18,7 +18,7 @@ public class GasMeterInfo extends DeviceInfo {
      * @param builder the builder
      */
     public GasMeterInfo(Builder builder) {
-        super(builder.id, builder.type, builder.consumption);
+        super(builder.id, DeviceType.GAS_METER, builder.consumption);
         this.gasDetectSensor = builder.gasDetectSensor;
         this.gasFlowSensor = builder.gasFlowSensor;
     }

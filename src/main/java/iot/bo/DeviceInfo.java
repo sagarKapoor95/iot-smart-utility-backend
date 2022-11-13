@@ -9,7 +9,7 @@ import iot.enums.DeviceType;
  * The Device info.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", include = JsonTypeInfo.As.PROPERTY)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ElectricityMeterInfo.class, name = "ELECTRICITY_METER"),
         @JsonSubTypes.Type(value = GasMeterInfo.class, name = "GAS_METER"),

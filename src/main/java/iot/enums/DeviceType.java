@@ -22,6 +22,5 @@ public enum DeviceType {
     GAS_METER("m3");
 
     DeviceType(String unit) {
-
     }
 }

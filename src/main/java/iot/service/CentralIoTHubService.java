@@ -3,9 +3,12 @@ package iot.service;
 import iot.converter.CentralIoTHubConverter;
 import iot.entity.CentralIoTHubEntity;
 import iot.entity.DeviceInfoEntity;
+import iot.entity.ResourceUtilizationPlanEntity;
 import iot.exception.CentralHubNotFoundException;
 import iot.exception.UserNotFoundException;
+import iot.exception.UtilizationPlanException;
 import iot.repository.CentralIoTHubRepository;
+import iot.repository.DeviceInfoRepository;
 import iot.repository.HubAndDeviceMappingRepository;
 import iot.repository.UserAndCentralIoTHubMappingRepo;
 import iot.request.RegisterCentralIoTHubRequest;
@@ -20,9 +23,10 @@ import java.util.List;
 public class CentralIoTHubService {
     private final UserAndCentralIoTHubMappingRepo userAndCentralIoTHubMappingRepo;
     private final HubAndDeviceMappingRepository hubAndDeviceMappingRepository;
-    private final DeviceService deviceService;
+    private final DeviceInfoRepository deviceInfoRepository;
     private final CentralIoTHubRepository centralIoTHubRepository;
     private final LoginSignUpService signUpService;
+    private final ResourceUtilizationPlanService resourceUtilizationPlanService;
 
     /**
      * Instantiates a new Central io t hub service.
@@ -30,20 +34,23 @@ public class CentralIoTHubService {
      * @param userAndCentralIoTHubMappingRepo the user and central io t hub mapping repo
      * @param centralIoTHubRepository         the central io t hub repository
      * @param signUpService                   the sign up service
-     * @param deviceService                   the device service
+     * @param deviceInfoRepository            the device info repository
      * @param hubAndDeviceMappingRepository   the hub and device mapping repository
+     * @param resourceUtilizationPlanService  the resource utilization plan service
      */
     public CentralIoTHubService(UserAndCentralIoTHubMappingRepo userAndCentralIoTHubMappingRepo,
                                 CentralIoTHubRepository centralIoTHubRepository,
                                 LoginSignUpService signUpService,
-                                DeviceService deviceService,
-                                HubAndDeviceMappingRepository hubAndDeviceMappingRepository) {
+                                DeviceInfoRepository deviceInfoRepository,
+                                HubAndDeviceMappingRepository hubAndDeviceMappingRepository,
+                                ResourceUtilizationPlanService resourceUtilizationPlanService) {
 
         this.userAndCentralIoTHubMappingRepo = userAndCentralIoTHubMappingRepo;
         this.centralIoTHubRepository = centralIoTHubRepository;
         this.signUpService = signUpService;
-        this.deviceService = deviceService;
+        this.deviceInfoRepository = deviceInfoRepository;
         this.hubAndDeviceMappingRepository = hubAndDeviceMappingRepository;
+        this.resourceUtilizationPlanService = resourceUtilizationPlanService;
     }
 
     /**
@@ -107,7 +114,7 @@ public class CentralIoTHubService {
                 hubAndDeviceMappingRepository.getAllDevicesForHub(hub.getId());
 
         for (final var deviceId : devices) {
-            final var device = deviceService.getDevice(deviceId.getDeviceId());
+            final var device = deviceInfoRepository.getDeviceInfo(deviceId.getDeviceId());
             deviceList.add(device);
         }
         return GetAllDevicesResponse.builder()
@@ -145,5 +152,53 @@ public class CentralIoTHubService {
         return response;
     }
 
+    /**
+     * Gets all devices by user.
+     *
+     * @param user the user
+     * @return the all devices by user
+     * @throws UserNotFoundException       the user not found exception
+     * @throws CentralHubNotFoundException the central hub not found exception
+     */
+    public List<GetAllDevicesResponse> getAllDevicesByUser(String user)
+            throws UserNotFoundException, CentralHubNotFoundException{
 
+        if (user == null) {
+            throw new UserNotFoundException("user not found");
+        }
+
+        final var hubs =
+                userAndCentralIoTHubMappingRepo.getCentralIoTHubForUser(user);
+        final var response = new ArrayList<GetAllDevicesResponse>();
+
+
+        for (final var hubId : hubs) {
+            final var devicesForCentralHub = getAllDevicesForHub(hubId.getHubId());
+            response.add(devicesForCentralHub);
+        }
+
+        return response;
+    }
+
+    /**
+     * Gets resource utilization plan entity.
+     *
+     * @param deviceId the device id
+     * @return the resource utilization plan entity
+     * @throws UtilizationPlanException the utilization plan exception
+     */
+    public ResourceUtilizationPlanEntity getResourceUtilizationPlanEntity(String deviceId)
+            throws UtilizationPlanException {
+        return resourceUtilizationPlanService.getResourceUtilizationPlanEntity(deviceId);
+    }
+
+    /**
+     * Update resource utilization plan entity resource utilization plan entity.
+     *
+     * @param plan the plan
+     * @return the resource utilization plan entity
+     */
+    public ResourceUtilizationPlanEntity updateResourceUtilizationPlanEntity(ResourceUtilizationPlanEntity plan){
+        return resourceUtilizationPlanService.getResourceUtilizationPlanEntity(plan);
+    }
 }

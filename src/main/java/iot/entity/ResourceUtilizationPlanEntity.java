@@ -20,6 +20,7 @@ public class ResourceUtilizationPlanEntity {
     private final Long startTimestamp;
     private final Long endTimestamp;
     private final Long totalUnit;
+    private final double consumption;
 
     /**
      * Instantiates a new Resource utilization plan entity.
@@ -34,6 +35,7 @@ public class ResourceUtilizationPlanEntity {
         this.endTimestamp = builder.endTimestamp;
         this.totalUnit = builder.totalUnit;
         this.deviceId = builder.deviceId;
+        this.consumption = builder.consumption;
     }
 
     /**
@@ -43,6 +45,10 @@ public class ResourceUtilizationPlanEntity {
      */
     public String getDeviceId() {
         return deviceId;
+    }
+
+    public double getConsumption() {
+        return consumption;
     }
 
     /**
@@ -140,6 +146,7 @@ public class ResourceUtilizationPlanEntity {
         private Long totalUnit;
         private String deviceId;
         private String id;
+        private double consumption;
 
         private Builder() {
         }
@@ -152,6 +159,17 @@ public class ResourceUtilizationPlanEntity {
          */
         public Builder setType(PlanType type) {
             this.type = type;
+            return this;
+        }
+
+        /**
+         * Sets consumption.
+         *
+         * @param consumption the consumption
+         * @return the consumption
+         */
+        public Builder setConsumption(double consumption) {
+            this.consumption = consumption;
             return this;
         }
 

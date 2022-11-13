@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import iot.converter.CentralIoTHubConverter;
 import iot.converter.DeviceInfoConverter;
 import iot.converter.ResourcePlanUtilizationConverter;
@@ -44,7 +45,8 @@ public class ResourceUtilizationPlanRepository {
                 .withString("name", entity.getName())
                 .withString("type", entity.getType().name())
                 .withNumber("start_time", entity.getStartTimestamp())
-                .withNumber("total_unit", entity.getTotalUnit());
+                .withNumber("total_unit", entity.getTotalUnit())
+                .withDouble("consumption", entity.getConsumption());
 
         if (entity.getEndTimestamp() != null) {
             item = item.withNumber("end_time", entity.getEndTimestamp());

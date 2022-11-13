@@ -69,7 +69,7 @@ public class RegisterCentralIoTHubController implements RequestHandler<APIGatewa
         UserAndCentralIoTHubMappingRepo userAndCentralIoTHubMappingRepo = new UserAndCentralIoTHubMappingRepo(table);
         CentralIoTHubRepository centralIoTHubRepository = new CentralIoTHubRepository(table);
         this.centralIoTHubService =
-                new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository, signUpService, null, null);
+                new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository, signUpService, null, null, null);
     }
 
     private Map<String, String> getHeaders() {

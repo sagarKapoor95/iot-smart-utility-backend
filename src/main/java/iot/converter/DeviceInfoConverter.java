@@ -99,8 +99,9 @@ public final class DeviceInfoConverter {
     }
 
     public static DevicesInfoEntity toDevicesInfoEntity(Item item) {
+        final var string = JsonUtil.serialize(item.getMap("payload"));
         final var devicesInfo =
-                JsonUtil.deSerialize(item.getString("payload"), DevicesInfo.class);
+                JsonUtil.deSerialize(string, DevicesInfo.class);
         return DevicesInfoEntity.builder()
                 .setDevicesInfo(devicesInfo)
                 .build();

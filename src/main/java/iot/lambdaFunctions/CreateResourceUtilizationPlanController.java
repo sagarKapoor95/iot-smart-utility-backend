@@ -86,14 +86,7 @@ public class CreateResourceUtilizationPlanController implements RequestHandler<A
         final var table = AWSDynamoDbBean.connectDynamoDB();
         final var userRepository = new UserRepository(table);
         final var repository = new ResourceUtilizationPlanRepository(table);
-        UserAndCentralIoTHubMappingRepo userAndCentralIoTHubMappingRepo = new UserAndCentralIoTHubMappingRepo(table);
-        CentralIoTHubRepository centralIoTHubRepository = new CentralIoTHubRepository(table);
-        final var centralIoTHubService =
-                new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository, signUpService, null, null);
-        final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
         this.signUpService = new LoginSignUpService(userRepository);
-        final var deviceService =
-                new DeviceService(new DeviceInfoRepository(table), centralIoTHubService, hubAndDeviceMappingRepository);
-        this.resourceUtilizationPlanService = new ResourceUtilizationPlanService(repository, deviceService);
+        this.resourceUtilizationPlanService = new ResourceUtilizationPlanService(repository, new DeviceInfoRepository(table));
     }
 }
