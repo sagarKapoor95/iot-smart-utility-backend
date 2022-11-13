@@ -45,7 +45,8 @@ public class ResourceUtilizationPlanRepository {
                 .withString("name", entity.getName())
                 .withString("type", entity.getType().name())
                 .withNumber("start_time", entity.getStartTimestamp())
-                .withNumber("total_unit", entity.getTotalUnit());
+                .withNumber("total_unit", entity.getTotalUnit())
+                .withDouble("consumption", entity.getConsumption());
 
         if (entity.getEndTimestamp() != null) {
             item = item.withNumber("end_time", entity.getEndTimestamp());

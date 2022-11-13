@@ -70,12 +70,10 @@ public class GetAllDevicesController implements RequestHandler<APIGatewayProxyRe
         final var userAndCentralIoTHubMappingRepo = new UserAndCentralIoTHubMappingRepo(table);
         final var deviceInfoRepository = new DeviceInfoRepository(table);
         final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
-        final var deviceService =
-                new DeviceService(deviceInfoRepository, null, hubAndDeviceMappingRepository);
         final var centralIoTHubRepository = new CentralIoTHubRepository(table);
         this.signUpService = new LoginSignUpService(userRepository);
         this.centralIoTHubService =
                 new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository,
-                        signUpService, deviceService, hubAndDeviceMappingRepository, null);
+                        signUpService, deviceInfoRepository, hubAndDeviceMappingRepository, null);
     }
 }

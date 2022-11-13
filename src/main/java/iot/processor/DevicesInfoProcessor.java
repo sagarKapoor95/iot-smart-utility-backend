@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DevicesInfoProcessor {
     private final DevicesInfoRepository repository;
-    private static int processTimeWindowInSeconds = 5;
+    private static int processTimeWindowInSeconds = 600;
     private static int gasPressure = 3000;
     private static int gasTemperature = 50; //https://psc.nebraska.gov/sites/psc.nebraska.gov/files/doc/Pipeline%20operation%20and%20impact%20on%20land%20values%20memo.pdf
     private static int gasVelocity = 30; //https://www.phcppros.com/articles/10964-flow-equations-for-high-pressure-natural-gas
@@ -25,8 +25,8 @@ public class DevicesInfoProcessor {
 
     public void processDevicesInfo() {
         try {
-            final var startTime = Instant.now().getEpochSecond();
-            final var endTime = Instant.now().getEpochSecond() + processTimeWindowInSeconds;
+            final var endTime= Instant.now().getEpochSecond();
+            final var startTime = Instant.now().getEpochSecond() - processTimeWindowInSeconds;
             final var devicesInfo = repository.getDevicesInfoInRange(startTime, endTime);
 
             final var indicatorStatus = process(devicesInfo);
@@ -38,18 +38,28 @@ public class DevicesInfoProcessor {
     }
 
     private IndicatorStateEntity process(List<DevicesInfoEntity> devicesInfos) {
-        final var builder = IndicatorStateEntity.builder();
-        boolean gasLeakage = true;
-        boolean gasPressureBool = true;
-        boolean gasTemperatureBool= true;
-        boolean gasVelocityBool= true;
-        boolean electricityVoltageBool= true;
+        boolean gasLeakage = false;
+        boolean gasPressureBool = false;
+        boolean gasTemperatureBool= false;
+        boolean gasVelocityBool= false;
+        boolean electricityVoltageBool= false;
         Double waterConsumption = 0.0;
         Double electricityConsumption = 0.0;
         Double gasConsumption = 0.0;
 
         for (final var deviceInfo : devicesInfos) {
+            if (deviceInfo.getDevicesInfo() == null) {
+                continue;
+            }
+            gasPressureBool = true;
+            gasTemperatureBool= true;
+            gasVelocityBool= true;
+            gasLeakage=true;
             for (final var device: deviceInfo.getDevicesInfo().getDevices()) {
+                if (device == null) {
+                    continue;
+                }
+
                 if (device.getType().equals(DeviceType.GAS_METER)) {
                     final var gasDevice = (GasMeterInfo) device;
                     gasLeakage &= gasDevice.getGasDetectSensor().isLeakage();
@@ -66,7 +76,7 @@ public class DevicesInfoProcessor {
 
                 if (device.getType().equals(DeviceType.WATER_METER)) {
                     final var waterMeterInfo = (WaterMeterInfo) device;
-                    electricityConsumption += waterMeterInfo.getConsumption().getValue();
+                    waterConsumption += waterMeterInfo.getConsumption().getValue();
                 }
             }
         }

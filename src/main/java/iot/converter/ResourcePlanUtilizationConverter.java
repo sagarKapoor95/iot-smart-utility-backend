@@ -50,6 +50,7 @@ public final class ResourcePlanUtilizationConverter {
                 .setStartTimestamp(item.getLong("start_time"))
                 .setType(PlanType.valueOf(item.getString("type")))
                 .setTotalUnit(item.getLong("total_unit"))
+                .setConsumption(item.getDouble("consumption"))
                 .build();
     }
 }

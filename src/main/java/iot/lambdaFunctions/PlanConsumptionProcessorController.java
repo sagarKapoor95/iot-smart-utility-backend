@@ -5,7 +5,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import iot.configuration.AWSDynamoDbBean;
-import iot.processor.DailyConsumptionProcessor;
 import iot.processor.PlanConsumptionProcessor;
 import iot.repository.*;
 import iot.service.CentralIoTHubService;

@@ -3,8 +3,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Timeout: 300
-      MemorySize: 1088
-      Handler: iot.lambdaFunctions.RegisterDevicesDataController
+      MemorySize: 1280
+      Handler: iot.lambdaFunctions.PlanConsumptionProcessorController
       CodeUri: Function
       Runtime: java11
       Architectures:

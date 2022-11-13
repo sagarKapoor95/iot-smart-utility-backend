@@ -16,8 +16,9 @@ public class ElectricityMeterInfo extends DeviceInfo{
      * @param builder the builder
      */
     public ElectricityMeterInfo(Builder builder) {
-        super(builder.id, builder.type, builder.consumption);
+        super(builder.id, DeviceType.ELECTRICITY_METER, builder.consumption);
     }
+
 
     /**
      * The type Builder.
@@ -25,7 +26,7 @@ public class ElectricityMeterInfo extends DeviceInfo{
     @JsonPOJOBuilder(withPrefix = "set")
     public static final class Builder {
         private String id;
-        private DeviceType type;
+        private String type;
         private Metric consumption;
 
         private Builder() {
@@ -48,7 +49,7 @@ public class ElectricityMeterInfo extends DeviceInfo{
          * @param type the type
          * @return the type
          */
-        public Builder setType(DeviceType type) {
+        public Builder setType(String type) {
             this.type = type;
             return this;
         }

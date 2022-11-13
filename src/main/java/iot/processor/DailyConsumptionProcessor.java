@@ -22,8 +22,8 @@ public class DailyConsumptionProcessor {
     }
 
     public void processData() {
-        final var startTime = Instant.now().getEpochSecond();
-        final var endTime = Instant.now().minus(processTimeWindowInSeconds).getEpochSecond();
+        final var endTime = Instant.now().getEpochSecond();
+        final var startTime = Instant.now().minus(processTimeWindowInSeconds).getEpochSecond();
 
         final var devices = repository.getDevicesInfoInRange(startTime, endTime);
         final var consumptions = process(devices);
@@ -36,7 +36,15 @@ public class DailyConsumptionProcessor {
         Double gasConsumption = 0.0;
 
         for (final var deviceInfo : devicesInfos) {
-            for (final var device: deviceInfo.getDevicesInfo().getDevices()) {
+            if (deviceInfo.getDevicesInfo() == null) {
+                continue;
+            }
+
+            for (final var device : deviceInfo.getDevicesInfo().getDevices()) {
+                if (device == null) {
+                    continue;
+                }
+
                 if (device.getType().equals(DeviceType.GAS_METER)) {
                     final var gasDevice = (GasMeterInfo) device;
                     gasConsumption += gasDevice.getConsumption().getValue();
@@ -49,7 +57,7 @@ public class DailyConsumptionProcessor {
 
                 if (device.getType().equals(DeviceType.WATER_METER)) {
                     final var waterMeterInfo = (WaterMeterInfo) device;
-                    electricityConsumption += waterMeterInfo.getConsumption().getValue();
+                    waterConsumption += waterMeterInfo.getConsumption().getValue();
                 }
             }
         }

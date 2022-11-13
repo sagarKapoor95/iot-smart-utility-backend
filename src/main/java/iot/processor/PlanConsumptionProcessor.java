@@ -27,7 +27,7 @@ public class PlanConsumptionProcessor {
     }
 
     public void processData() {
-        final var user = "user#sagarkpr";
+        final var user = "sagarkpr";
         try {
             final var centralHubs = centralIoTHubService.getAllDevicesByUser(user);
             for(var centralHub: centralHubs) {
