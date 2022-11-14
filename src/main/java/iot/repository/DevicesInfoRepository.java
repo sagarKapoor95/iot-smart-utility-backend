@@ -5,9 +5,10 @@ import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import iot.bo.DevicesInfo;
+import iot.converter.DailyConsumptionsConverter;
 import iot.converter.DeviceInfoConverter;
+import iot.converter.IndicatorStatusConverter;
 import iot.entity.DailyConsumptionEntity;
-import iot.entity.DeviceInfoEntity;
 import iot.entity.DevicesInfoEntity;
 import iot.entity.IndicatorStateEntity;
 import iot.utility.JsonUtil;
@@ -66,14 +67,50 @@ public class DevicesInfoRepository {
         return indicatorStateEntity;
     }
 
+    public List<IndicatorStateEntity> getIndicatorsState(int size) {
+        final var indicatorStateEntities = new ArrayList<IndicatorStateEntity>();
+        final var condition = new RangeKeyCondition("sk")
+                .beginsWith(TIMESTAMP_KEY_PREFIX);
+
+        QuerySpec query = new QuerySpec()
+                .withHashKey("pk", INDICATOR_STATUS_KEY)
+                .withRangeKeyCondition(condition);
+
+        query.setMaxResultSize(size);
+
+        for (final var item : this.table.query(query)) {
+            indicatorStateEntities.add(IndicatorStatusConverter.toIndicatorStateEntity(item));
+        }
+
+        return indicatorStateEntities;
+    }
+
     public DailyConsumptionEntity saveConsumptions(DailyConsumptionEntity entity) {
         final var item = new Item()
                 .withPrimaryKey("pk", entity.getPk(), "sk", entity.getSk())
                 .withDouble("electricity_consumption",entity.getElectricityConsumption())
                 .withDouble("water_consumption", entity.getWaterConsumption())
-                .withDouble("gas_onsumption", entity.getGasConsumption());
+                .withDouble("gas_consumption", entity.getGasConsumption());
 
         table.putItem(item);
         return entity;
+    }
+
+    public List<DailyConsumptionEntity> getConsumptions(int limit) {
+        final var dailyConsumptionEntities = new ArrayList<DailyConsumptionEntity>();
+        final var condition = new RangeKeyCondition("sk")
+                .beginsWith(TIMESTAMP_KEY_PREFIX);
+
+        QuerySpec query = new QuerySpec()
+                .withHashKey("pk", DAILY_CONSUMPTION_KEY)
+                .withRangeKeyCondition(condition);
+
+        query.setMaxResultSize(limit);
+
+        for (final var item : this.table.query(query)) {
+            dailyConsumptionEntities.add(DailyConsumptionsConverter.toDailyConsumptionEntity(item));
+        }
+
+        return dailyConsumptionEntities;
     }
 }

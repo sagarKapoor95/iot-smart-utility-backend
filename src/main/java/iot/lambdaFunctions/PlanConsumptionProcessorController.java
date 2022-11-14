@@ -8,6 +8,7 @@ import iot.configuration.AWSDynamoDbBean;
 import iot.processor.PlanConsumptionProcessor;
 import iot.repository.*;
 import iot.service.CentralIoTHubService;
+import iot.service.DeviceService;
 import iot.service.LoginSignUpService;
 import iot.service.ResourceUtilizationPlanService;
 
@@ -41,16 +42,19 @@ public class PlanConsumptionProcessorController implements RequestHandler<APIGat
         final var table = AWSDynamoDbBean.connectDynamoDB();
         UserAndCentralIoTHubMappingRepo userAndCentralIoTHubMappingRepo = new UserAndCentralIoTHubMappingRepo(table);
 
-        CentralIoTHubRepository centralIoTHubRepository = new CentralIoTHubRepository(table);
-        DeviceInfoRepository deviceInfoRepository = new DeviceInfoRepository(table);
-        DevicesInfoRepository devicesInfoRepository = new DevicesInfoRepository(table);
-        HubAndDeviceMappingRepository hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
-        ResourceUtilizationPlanRepository repository = new ResourceUtilizationPlanRepository(table);
+        final var centralIoTHubRepository = new CentralIoTHubRepository(table);
+        final var deviceInfoRepository = new DeviceInfoRepository(table);
+        final var devicesInfoRepository = new DevicesInfoRepository(table);
+        final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
+        final var repository = new ResourceUtilizationPlanRepository(table);
         final var userRepository = new UserRepository(table);
+
         final var signUpService = new LoginSignUpService(userRepository);
-        ResourceUtilizationPlanService resourceUtilizationPlanService = new ResourceUtilizationPlanService(repository, deviceInfoRepository);
+        final var resourceUtilizationPlanService = new ResourceUtilizationPlanService(repository, deviceInfoRepository);
+        final var deviceService =
+                new DeviceService(deviceInfoRepository, centralIoTHubRepository, hubAndDeviceMappingRepository, repository, devicesInfoRepository);
         final var centralIoTHubService =
-                new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository, signUpService, deviceInfoRepository, hubAndDeviceMappingRepository, resourceUtilizationPlanService);
+                new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository, signUpService, deviceService, hubAndDeviceMappingRepository, resourceUtilizationPlanService);
         this.processor = new PlanConsumptionProcessor(centralIoTHubService, devicesInfoRepository);
     }
 }

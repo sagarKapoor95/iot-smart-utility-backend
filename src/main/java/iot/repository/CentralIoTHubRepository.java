@@ -2,17 +2,9 @@ package iot.repository;
 
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
-import com.amazonaws.services.dynamodbv2.document.RangeKeyCondition;
 import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import iot.converter.CentralIoTHubConverter;
-import iot.converter.DeviceInfoConverter;
 import iot.entity.CentralIoTHubEntity;
-import iot.entity.HubAndDeviceMappingEntity;
-import iot.entity.UserCentralIoTHubMappingEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static iot.constant.constant.*;
 

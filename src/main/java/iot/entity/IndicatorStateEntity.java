@@ -1,5 +1,6 @@
 package iot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
@@ -45,6 +46,7 @@ public class IndicatorStateEntity {
      *
      * @return the string
      */
+    @JsonIgnore
     public String getPk() {
         return INDICATOR_STATUS_KEY;
     }
@@ -54,6 +56,7 @@ public class IndicatorStateEntity {
      *
      * @return the string
      */
+    @JsonIgnore
     public String getSk() {
         return TIMESTAMP_KEY_PREFIX+ Instant.now().getEpochSecond();
     }

@@ -13,7 +13,7 @@ import java.util.List;
 @JsonDeserialize(builder = GetAllDevicesResponse.Builder.class)
 public class GetAllDevicesResponse {
     private final CentralIoTHubEntity hubDetails;
-    private final List<DeviceInfoEntity> devices;
+    private final List<DeviceDetailsResponse> devices;
 
     /**
      * Instantiates a new Get all devices response.
@@ -39,7 +39,7 @@ public class GetAllDevicesResponse {
      *
      * @return the devices
      */
-    public List<DeviceInfoEntity> getDevices() {
+    public List<DeviceDetailsResponse> getDevices() {
         return devices;
     }
 
@@ -58,7 +58,7 @@ public class GetAllDevicesResponse {
     @JsonPOJOBuilder(withPrefix = "set")
     public static final class Builder {
         private CentralIoTHubEntity hubDetails;
-        private List<DeviceInfoEntity> devices;
+        private List<DeviceDetailsResponse> devices;
 
         private Builder() {
         }
@@ -80,7 +80,7 @@ public class GetAllDevicesResponse {
          * @param devices the devices
          * @return the devices
          */
-        public Builder setDevices(List<DeviceInfoEntity> devices) {
+        public Builder setDevices(List<DeviceDetailsResponse> devices) {
             this.devices = devices;
             return this;
         }
