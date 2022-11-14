@@ -72,10 +72,14 @@ public class GetAllDevicesForHub implements RequestHandler<APIGatewayProxyReques
         final var deviceInfoRepository = new DeviceInfoRepository(table);
         final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
         final var centralIoTHubRepository = new CentralIoTHubRepository(table);
+        final var resourceUtilizationPlanRepository = new ResourceUtilizationPlanRepository(table);
+        final var devicesInfoRepository = new DevicesInfoRepository(table);
+
+        final var deviceService = new DeviceService(deviceInfoRepository, centralIoTHubRepository, hubAndDeviceMappingRepository, resourceUtilizationPlanRepository, devicesInfoRepository);
 
         this.centralIoTHubService =
                 new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository,
-                        signUpService, deviceInfoRepository, hubAndDeviceMappingRepository, null);
+                        signUpService, deviceService, hubAndDeviceMappingRepository, null);
         this.signUpService = new LoginSignUpService(userRepository);
     }
 }

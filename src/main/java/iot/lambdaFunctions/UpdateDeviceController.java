@@ -6,9 +6,10 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import iot.configuration.AWSDynamoDbBean;
 import iot.converter.DeviceInfoConverter;
-import iot.repository.DeviceInfoRepository;
-import iot.repository.UserRepository;
+import iot.exception.DeviceNotFoundException;
+import iot.repository.*;
 import iot.request.UpdateDeviceRequest;
+import iot.service.DeviceService;
 import iot.service.LoginSignUpService;
 import iot.utility.JsonUtil;
 import org.apache.http.HttpStatus;
@@ -20,16 +21,15 @@ import java.util.Map;
  * The Update device controller.
  */
 public class UpdateDeviceController implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent>  {
-    private DeviceInfoRepository deviceInfoRepository;
+    private DeviceService service;
     private LoginSignUpService signUpService;
 
     public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
         init();
         final var headers = getHeaders();
         final var request = JsonUtil.deSerialize(input.getBody(), UpdateDeviceRequest.class);
+        final var id = input.getPathParameters().get("deviceId");
         assert request != null;
-        var deviceInfoEntity = deviceInfoRepository.getDeviceInfo(request.getId());
-
         final var token = input.getHeaders().get("token");
 
         if(token == null || token.equals("") || !this.signUpService.validateToken(token)) {
@@ -39,24 +39,20 @@ public class UpdateDeviceController implements RequestHandler<APIGatewayProxyReq
                     .withStatusCode(HttpStatus.SC_UNAUTHORIZED);
         }
 
-        if (deviceInfoEntity == null) {
-            return new APIGatewayProxyResponseEvent()
-                    .withHeaders(headers)
-                    .withBody("Device id not found")
-                    .withStatusCode(404);
-        }
-
-        deviceInfoEntity = DeviceInfoConverter.toDeviceInfoEntity(request, deviceInfoEntity);
-        final var deviceInfo = this.deviceInfoRepository.saveDeviceInfo(deviceInfoEntity);
-
         final var response = new APIGatewayProxyResponseEvent()
                 .withHeaders(headers);
 
         try {
+            final var deviceInfo = service.updateDeviceInfo(request, id);
             final var body =  JsonUtil.serialize(deviceInfo);
             return response
                     .withBody(body)
                     .withStatusCode(200);
+        } catch (DeviceNotFoundException e) {
+            return new APIGatewayProxyResponseEvent()
+                    .withHeaders(headers)
+                    .withBody("Device id not found")
+                    .withStatusCode(404);
         } catch (Exception e) {
             final var body = Map.of("body", "internal server error",
                     "error", e.toString());
@@ -76,8 +72,14 @@ public class UpdateDeviceController implements RequestHandler<APIGatewayProxyReq
 
     private void init() {
         final var table = AWSDynamoDbBean.connectDynamoDB();
-        this.deviceInfoRepository = new DeviceInfoRepository(table);
+        final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
+        final var repository = new DeviceInfoRepository(table);
+        final var resourceUtilizationPlanRepository = new ResourceUtilizationPlanRepository(table);
+        final var centralIoTHubRepository = new CentralIoTHubRepository(table);
+        final var devicesInfoRepository = new DevicesInfoRepository(table);
         final var userRepository = new UserRepository(table);
         this.signUpService = new LoginSignUpService(userRepository);
+        this.service =
+                new DeviceService(repository, centralIoTHubRepository, hubAndDeviceMappingRepository, resourceUtilizationPlanRepository, devicesInfoRepository);
     }
 }

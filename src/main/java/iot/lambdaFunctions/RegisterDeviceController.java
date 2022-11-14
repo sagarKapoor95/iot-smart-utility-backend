@@ -72,14 +72,11 @@ public class RegisterDeviceController implements RequestHandler<APIGatewayProxyR
 
     private void init() {
         final var table = AWSDynamoDbBean.connectDynamoDB();
-        UserAndCentralIoTHubMappingRepo userAndCentralIoTHubMappingRepo = new UserAndCentralIoTHubMappingRepo(table);
-        CentralIoTHubRepository centralIoTHubRepository = new CentralIoTHubRepository(table);
-        final var centralIoTHubService =
-                new CentralIoTHubService(userAndCentralIoTHubMappingRepo, centralIoTHubRepository, signUpService, null, null, null);
-        final var userRepository = new UserRepository(table);
         final var hubAndDeviceMappingRepository = new HubAndDeviceMappingRepository(table);
+        final var centralIoTHubRepository = new CentralIoTHubRepository(table);
+        final var userRepository = new UserRepository(table);
         this.signUpService = new LoginSignUpService(userRepository);
         this.deviceService =
-                new DeviceService(new DeviceInfoRepository(table), centralIoTHubService, hubAndDeviceMappingRepository) ;
+                new DeviceService(new DeviceInfoRepository(table), centralIoTHubRepository, hubAndDeviceMappingRepository, null, null);
     }
 }

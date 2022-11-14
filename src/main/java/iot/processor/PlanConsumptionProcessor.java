@@ -32,8 +32,10 @@ public class PlanConsumptionProcessor {
             final var centralHubs = centralIoTHubService.getAllDevicesByUser(user);
             for(var centralHub: centralHubs) {
                 for (var device: centralHub.getDevices()) {
-                    final var plan = centralIoTHubService.getResourceUtilizationPlanEntity(device.getId());
-                    final var updatedPlan = calculateConsumptionBasedOnPlan(plan, device.getType());
+                    final var plan =
+                            centralIoTHubService.getResourceUtilizationPlanEntity(device.getMeterInfo().getId());
+                    final var updatedPlan =
+                            calculateConsumptionBasedOnPlan(plan, device.getMeterInfo().getType());
                     centralIoTHubService.updateResourceUtilizationPlanEntity(updatedPlan);
                 }
             }

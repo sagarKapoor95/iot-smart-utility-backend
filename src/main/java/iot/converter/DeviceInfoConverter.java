@@ -88,8 +88,10 @@ public final class DeviceInfoConverter {
      * @return the device info entity
      */
     public static DeviceInfoEntity toDeviceInfoEntity(UpdateDeviceRequest request, DeviceInfoEntity entity) {
+
         return DeviceInfoEntity.builder()
                 .setId(entity.getId())
+                .setHubId(entity.getHubId())
                 .setName(request.getName() == null ? entity.getName() : request.getName())
                 .setCreatedAt(entity.getCreatedAt())
                 .setStatus(request.isStatus() != entity.isStatus() ? request.isStatus() : entity.isStatus())

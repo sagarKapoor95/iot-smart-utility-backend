@@ -38,11 +38,14 @@ public class DevicesInfoProcessor {
     }
 
     private IndicatorStateEntity process(List<DevicesInfoEntity> devicesInfos) {
-        boolean gasLeakage = false;
-        boolean gasPressureBool = false;
-        boolean gasTemperatureBool= false;
-        boolean gasVelocityBool= false;
-        boolean electricityVoltageBool= false;
+        int gasLeakage = 0;
+        int gasPressureBool = 0;
+        int gasTemperatureBool = 0;
+        int gasVelocityBool = 0;
+
+
+        int totalGasEvents = 0;
+
         Double waterConsumption = 0.0;
         Double electricityConsumption = 0.0;
         Double gasConsumption = 0.0;
@@ -51,10 +54,6 @@ public class DevicesInfoProcessor {
             if (deviceInfo.getDevicesInfo() == null) {
                 continue;
             }
-            gasPressureBool = true;
-            gasTemperatureBool= true;
-            gasVelocityBool= true;
-            gasLeakage=true;
             for (final var device: deviceInfo.getDevicesInfo().getDevices()) {
                 if (device == null) {
                     continue;
@@ -62,10 +61,11 @@ public class DevicesInfoProcessor {
 
                 if (device.getType().equals(DeviceType.GAS_METER)) {
                     final var gasDevice = (GasMeterInfo) device;
-                    gasLeakage &= gasDevice.getGasDetectSensor().isLeakage();
-                    gasPressureBool &= (gasDevice.getGasFlowSensor().getPressure().getValue() > gasPressure);
-                    gasTemperatureBool &= (gasDevice.getGasFlowSensor().getTemperature().getValue() > gasTemperature);
-                    gasVelocityBool &= (gasDevice.getGasFlowSensor().getVelocity().getValue() > gasVelocity);
+                    totalGasEvents+=1;
+                    gasLeakage += (gasDevice.getGasDetectSensor().isLeakage() ? 1 : 0);
+                    gasPressureBool += (gasDevice.getGasFlowSensor().getPressure().getValue() > gasPressure ? 1 : 0);
+                    gasTemperatureBool += (gasDevice.getGasFlowSensor().getTemperature().getValue() > gasTemperature ? 1 : 0);
+                    gasVelocityBool += (gasDevice.getGasFlowSensor().getVelocity().getValue() > gasVelocity ? 1 : 0);
                     gasConsumption += gasDevice.getConsumption().getValue();
                 }
 
@@ -83,13 +83,13 @@ public class DevicesInfoProcessor {
 
         return IndicatorStateEntity.builder()
                 .setElectricityConsumption(electricityConsumption)
-                .setElectricityVoltage(electricityVoltageBool)
+                .setElectricityVoltage(false)
                 .setGasConsumption(gasConsumption)
                 .setWaterConsumption(waterConsumption)
-                .setGasLeakage(gasLeakage)
-                .setGasPressure(gasPressureBool)
-                .setGasTemperature(gasTemperatureBool)
-                .setGasVelocity(gasVelocityBool)
+                .setGasLeakage((gasLeakage * 100 / totalGasEvents) > 30)
+                .setGasPressure((gasPressureBool * 100 / totalGasEvents) > 30)
+                .setGasTemperature((gasTemperatureBool * 100 / totalGasEvents) > 30)
+                .setGasVelocity((gasVelocityBool * 100 / totalGasEvents) > 30)
                 .build();
     }
 }

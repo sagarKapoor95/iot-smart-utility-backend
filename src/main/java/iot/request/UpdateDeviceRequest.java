@@ -13,7 +13,6 @@ public class UpdateDeviceRequest {
     private final DeviceType type;
     private final String name;
     private final boolean status;
-    private final String id;
 
     /**
      * Instantiates a new Register device request.
@@ -21,21 +20,10 @@ public class UpdateDeviceRequest {
      * @param builder the builder
      */
     public UpdateDeviceRequest(Builder builder) {
-        Asserts.notNull(builder.id, "id cannot be null");
 
         this.type = builder.type;
         this.name = builder.name;
         this.status = builder.status;
-        this.id = builder.id;
-    }
-
-    /**
-     * Gets id.
-     *
-     * @return the id
-     */
-    public String getId() {
-        return id;
     }
 
     /**
@@ -82,7 +70,6 @@ public class UpdateDeviceRequest {
         private DeviceType type;
         private String name;
         private boolean status;
-        private String id;
 
         /**
          * Sets type.
@@ -92,17 +79,6 @@ public class UpdateDeviceRequest {
          */
         public Builder setType(DeviceType type) {
             this.type = type;
-            return this;
-        }
-
-        /**
-         * Sets id.
-         *
-         * @param id the id
-         * @return the id
-         */
-        public Builder setId(String id) {
-            this.id = id;
             return this;
         }
 
