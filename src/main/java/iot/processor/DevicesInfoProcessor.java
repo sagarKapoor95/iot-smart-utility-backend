@@ -13,10 +13,10 @@ import java.util.List;
 
 public class DevicesInfoProcessor {
     private final DevicesInfoRepository repository;
-    private static int processTimeWindowInSeconds = 600;
-    private static int gasPressure = 3000;
-    private static int gasTemperature = 50; //https://psc.nebraska.gov/sites/psc.nebraska.gov/files/doc/Pipeline%20operation%20and%20impact%20on%20land%20values%20memo.pdf
-    private static int gasVelocity = 30; //https://www.phcppros.com/articles/10964-flow-equations-for-high-pressure-natural-gas
+    private static int processTimeWindowInSeconds = 60;
+    private static int gasPressure = 10;
+    private static int gasTemperature = 50;
+    private static int gasVelocity = 20;
     private static int electricityVoltage = 230;
 
     public DevicesInfoProcessor(DevicesInfoRepository repository) {
@@ -86,10 +86,10 @@ public class DevicesInfoProcessor {
                 .setElectricityVoltage(false)
                 .setGasConsumption(gasConsumption)
                 .setWaterConsumption(waterConsumption)
-                .setGasLeakage((gasLeakage * 100 / totalGasEvents) > 30)
-                .setGasPressure((gasPressureBool * 100 / totalGasEvents) > 30)
-                .setGasTemperature((gasTemperatureBool * 100 / totalGasEvents) > 30)
-                .setGasVelocity((gasVelocityBool * 100 / totalGasEvents) > 30)
+                .setGasLeakage(totalGasEvents == 0 ? null : (gasLeakage * 100 / totalGasEvents) > 30)
+                .setGasPressure(totalGasEvents == 0 ? null : (gasPressureBool * 100 / totalGasEvents) > 30)
+                .setGasTemperature(totalGasEvents == 0 ? null :  (gasTemperatureBool * 100 / totalGasEvents) > 30)
+                .setGasVelocity(totalGasEvents == 0 ? null :  (gasVelocityBool * 100 / totalGasEvents) > 30)
                 .build();
     }
 }
