@@ -21,7 +21,7 @@ import static iot.constant.constant.USER_NAME;
 public class DevicesInfoProcessor {
     private final DevicesInfoRepository repository;
     private final NotificationTask notificationTask;
-    private static int processTimeWindowInSeconds = 60;
+    private static int processTimeWindowInSeconds = 1000;
     private static int gasPressure = 10;
     private static int gasTemperature = 50;
     private static int gasVelocity = 20;
