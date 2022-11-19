@@ -14,6 +14,7 @@ import static iot.constant.constant.TIMESTAMP_KEY_PREFIX;
  */
 @JsonDeserialize(builder = IndicatorStateEntity.Builder.class)
 public class IndicatorStateEntity {
+    private final boolean systemActive;
     private final boolean gasLeakage;
     private final boolean gasPressure;
     private final boolean gasTemperature;
@@ -39,6 +40,7 @@ public class IndicatorStateEntity {
         this.electricityConsumption = builder.electricityConsumption;
         this.gasConsumption = builder.gasConsumption;
         this.processed = builder.processed;
+        this.systemActive = builder.systemActive;
     }
 
     /**
@@ -62,47 +64,56 @@ public class IndicatorStateEntity {
     }
 
     /**
-     * Gets gas leakage.
+     * Is system active boolean.
      *
-     * @return the gas leakage
+     * @return the boolean
      */
-    public Boolean getGasLeakage() {
+    public boolean isSystemActive() {
+        return systemActive;
+    }
+
+    /**
+     * Is gas leakage boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isGasLeakage() {
         return gasLeakage;
     }
 
     /**
-     * Gets gas pressure.
+     * Is gas pressure boolean.
      *
-     * @return the gas pressure
+     * @return the boolean
      */
-    public Boolean getGasPressure() {
+    public boolean isGasPressure() {
         return gasPressure;
     }
 
     /**
-     * Gets gas temperature.
+     * Is gas temperature boolean.
      *
-     * @return the gas temperature
+     * @return the boolean
      */
-    public Boolean getGasTemperature() {
+    public boolean isGasTemperature() {
         return gasTemperature;
     }
 
     /**
-     * Gets gas velocity.
+     * Is gas velocity boolean.
      *
-     * @return the gas velocity
+     * @return the boolean
      */
-    public Boolean getGasVelocity() {
+    public boolean isGasVelocity() {
         return gasVelocity;
     }
 
     /**
-     * Gets electricity voltage.
+     * Is electricity voltage boolean.
      *
-     * @return the electricity voltage
+     * @return the boolean
      */
-    public Boolean getElectricityVoltage() {
+    public boolean isElectricityVoltage() {
         return electricityVoltage;
     }
 
@@ -165,6 +176,7 @@ public class IndicatorStateEntity {
         private Double electricityConsumption;
         private Double gasConsumption;
         private boolean processed;
+        private boolean systemActive;
 
         private Builder() {
         }
@@ -177,6 +189,17 @@ public class IndicatorStateEntity {
          */
         public Builder setGasLeakage(Boolean gasLeakage) {
             this.gasLeakage = gasLeakage;
+            return this;
+        }
+
+        /**
+         * Sets system active.
+         *
+         * @param systemActive the system active
+         * @return the system active
+         */
+        public Builder setSystemActive(Boolean systemActive) {
+            this.systemActive = systemActive;
             return this;
         }
 
