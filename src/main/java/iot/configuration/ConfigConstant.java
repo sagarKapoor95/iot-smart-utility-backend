@@ -26,4 +26,13 @@ public final class ConfigConstant {
      * The constant AWS_DYNAMODB_URL.
      */
     public static final String AWS_DYNAMODB_URL= "https://dynamodb.us-east-1.amazonaws.com";
+    /**
+     * The constant FCM_NOTIFICATION_URL.
+     */
+    public static final String FCM_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
+
+    /**
+     * The constant FCM_NOTIFICATION_AUTH_TOKEN.
+     */
+    public static final String FCM_NOTIFICATION_AUTH_TOKEN = "";
 }

@@ -8,9 +8,11 @@ import iot.bo.DevicesInfo;
 import iot.converter.DailyConsumptionsConverter;
 import iot.converter.DeviceInfoConverter;
 import iot.converter.IndicatorStatusConverter;
+import iot.entity.CommsEntity;
 import iot.entity.DailyConsumptionEntity;
 import iot.entity.DevicesInfoEntity;
 import iot.entity.IndicatorStateEntity;
+import iot.enums.EventType;
 import iot.utility.JsonUtil;
 
 import java.util.ArrayList;
@@ -53,15 +55,16 @@ public class DevicesInfoRepository {
     public IndicatorStateEntity saveIndicatorStatus(IndicatorStateEntity indicatorStateEntity) {
         final var item = new Item()
                 .withPrimaryKey("pk", indicatorStateEntity.getPk(), "sk", indicatorStateEntity.getSk())
-                .withBoolean("gas_leakage",indicatorStateEntity.getGasLeakage())
-                .withBoolean("gas_pressure", indicatorStateEntity.getGasPressure())
-                .withBoolean("gas_temperature", indicatorStateEntity.getGasTemperature())
-                .withBoolean("gas_velocity", indicatorStateEntity.getGasVelocity())
-                .withBoolean("electricity_voltage", indicatorStateEntity.getElectricityVoltage())
+                .withBoolean("gas_leakage",indicatorStateEntity.isGasLeakage())
+                .withBoolean("gas_pressure", indicatorStateEntity.isGasPressure())
+                .withBoolean("gas_temperature", indicatorStateEntity.isGasTemperature())
+                .withBoolean("gas_velocity", indicatorStateEntity.isGasVelocity())
+                .withBoolean("electricity_voltage", indicatorStateEntity.isElectricityVoltage())
                 .withDouble("water_consumption", indicatorStateEntity.getWaterConsumption())
                 .withDouble("electricity_consumption", indicatorStateEntity.getElectricityConsumption())
                 .withDouble("gas_consumption", indicatorStateEntity.getGasConsumption())
-                .withBoolean("processed", indicatorStateEntity.isProcessed());
+                .withBoolean("processed", indicatorStateEntity.isProcessed())
+                .withBoolean("system_active", indicatorStateEntity.isSystemActive());
 
         table.putItem(item);
         return indicatorStateEntity;
@@ -112,5 +115,36 @@ public class DevicesInfoRepository {
         }
 
         return dailyConsumptionEntities;
+    }
+
+    public CommsEntity saveCommsEvent(CommsEntity entity) {
+
+        final var item = new Item()
+                .withPrimaryKey("pk", entity.getPk(), "sk", entity.getSk())
+                .withString("type",entity.getType().name())
+                .withString("response", entity.getCommsResponse())
+                .withString("user_id", entity.getUserId())
+                .withString("token", entity.getToken())
+                .withLong("ts", entity.getTimestamp());
+
+        table.putItem(item);
+        return entity;
+    }
+
+    public CommsEntity getCommsEvent(EventType type) {
+        final var item =
+                table.getItem("pk", DEVICE_PREFIX, "sk", DEVICE_INFO_KEY_PREFIX + type.name());
+
+        if (item == null) {
+            return null;
+        }
+
+        return CommsEntity.builder()
+                .setCommsResponse(item.getString("response"))
+                .setEventType(EventType.valueOf(item.getString("type")))
+                .setTimestamp(item.getLong("ts"))
+                .setToken(item.getString("token"))
+                .setUserId(item.getString("user_id"))
+                .build();
     }
 }

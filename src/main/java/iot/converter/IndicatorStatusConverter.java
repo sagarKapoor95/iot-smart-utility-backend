@@ -7,6 +7,7 @@ public final class IndicatorStatusConverter {
     public static IndicatorStateEntity toIndicatorStateEntity(Item item) {
 
         return IndicatorStateEntity.builder()
+                .setSystemActive(item.getBoolean("system_active"))
                 .setWaterConsumption(item.getDouble("water_consumption"))
                 .setGasVelocity(item.getBoolean("gas_velocity"))
                 .setGasTemperature(item.getBoolean("gas_temperature"))

@@ -45,7 +45,24 @@ public final class constant {
      * The constant RESOURCE_UTILIZATION_PLAN_KEY_PREFIX.
      */
     public static String RESOURCE_UTILIZATION_PLAN_KEY_PREFIX = "plan#";
+    /**
+     * The constant INDICATOR_STATUS_KEY.
+     */
     public static String INDICATOR_STATUS_KEY = "INDICATOR_STATUS";
-
+    /**
+     * The constant DAILY_CONSUMPTION_KEY.
+     */
     public static String DAILY_CONSUMPTION_KEY = "DAILY_CONSUMPTION";
+    /**
+     * The constant EVENT_KEY.
+     */
+    public static String EVENT_KEY = "EVENT";
+    /**
+     * The constant EVENT_KEY_PREFIX.
+     */
+    public static String EVENT_KEY_PREFIX = "event#";
+    /**
+     * The constant USER_NAME.
+     */
+    public static String USER_NAME = "sagarkpr";
 }

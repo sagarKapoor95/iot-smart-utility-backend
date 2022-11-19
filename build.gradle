@@ -12,6 +12,8 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-core:1.9.13'
     implementation 'com.amazonaws:aws-java-sdk:1.9.13'
     implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.9.13'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+
     testImplementation 'junit:junit:4.13.2'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'

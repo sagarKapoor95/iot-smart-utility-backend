@@ -15,6 +15,8 @@ import javax.management.timer.Timer;
 import java.time.Instant;
 import java.util.List;
 
+import static iot.constant.constant.USER_NAME;
+
 public class PlanConsumptionProcessor {
     private final DevicesInfoRepository devicesInfoRepository;
     private final CentralIoTHubService centralIoTHubService;
@@ -27,7 +29,7 @@ public class PlanConsumptionProcessor {
     }
 
     public void processData() {
-        final var user = "sagarkpr";
+        final var user = USER_NAME;
         try {
             final var centralHubs = centralIoTHubService.getAllDevicesByUser(user);
             for(var centralHub: centralHubs) {

@@ -4,7 +4,7 @@ Resources:
     Properties:
       Timeout: 300
       MemorySize: 1088
-      Handler: iot.lambdaFunctions.UpdateDeviceController
+      Handler: iot.lambdaFunctions.DeviceInfoProcessorController
       CodeUri: Function
       Runtime: java11
       Architectures:
