@@ -23,7 +23,7 @@ public class DailyConsumptionProcessor {
 
     public void processData() {
         final var endTime = Instant.now().getEpochSecond();
-        final var startTime = Instant.now().minus(processTimeWindowInSeconds).getEpochSecond();
+        final var startTime = Instant.now().getEpochSecond() - 300;
 
         final var devices = repository.getDevicesInfoInRange(startTime, endTime);
         final var consumptions = process(devices);
