@@ -17,6 +17,7 @@ public final class IndicatorStatusConverter {
                 .setGasConsumption(item.getDouble("gas_consumption"))
                 .setElectricityVoltage(item.getBoolean("electricity_voltage"))
                 .setProcessed(item.getBoolean("processed"))
+                .setWaterLeakage(!item.isNull("water_leakage") && item.getBoolean("water_leakage"))
                 .build();
     }
 }

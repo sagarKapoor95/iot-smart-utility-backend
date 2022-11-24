@@ -16,6 +16,7 @@ import static iot.constant.constant.TIMESTAMP_KEY_PREFIX;
 public class IndicatorStateEntity {
     private final boolean systemActive;
     private final boolean gasLeakage;
+    private final boolean waterLeakage;
     private final boolean gasPressure;
     private final boolean gasTemperature;
     private final boolean gasVelocity;
@@ -41,6 +42,7 @@ public class IndicatorStateEntity {
         this.gasConsumption = builder.gasConsumption;
         this.processed = builder.processed;
         this.systemActive = builder.systemActive;
+        this.waterLeakage = builder.waterLeakage;
     }
 
     /**
@@ -51,6 +53,15 @@ public class IndicatorStateEntity {
     @JsonIgnore
     public String getPk() {
         return INDICATOR_STATUS_KEY;
+    }
+
+    /**
+     * Is water leakage boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isWaterLeakage() {
+        return waterLeakage;
     }
 
     /**
@@ -170,6 +181,7 @@ public class IndicatorStateEntity {
         private Boolean gasLeakage;
         private Boolean gasPressure;
         private Boolean gasTemperature;
+        private Boolean waterLeakage;
         private Boolean gasVelocity;
         private Boolean electricityVoltage;
         private Double waterConsumption;
@@ -189,6 +201,17 @@ public class IndicatorStateEntity {
          */
         public Builder setGasLeakage(Boolean gasLeakage) {
             this.gasLeakage = gasLeakage;
+            return this;
+        }
+
+        /**
+         * Sets water leakage.
+         *
+         * @param waterLeakage the water leakage
+         * @return the water leakage
+         */
+        public Builder setWaterLeakage(Boolean waterLeakage) {
+            this.waterLeakage = waterLeakage;
             return this;
         }
 

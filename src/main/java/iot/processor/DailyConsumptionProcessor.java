@@ -23,7 +23,7 @@ public class DailyConsumptionProcessor {
 
     public void processData() {
         final var endTime = Instant.now().getEpochSecond();
-        final var startTime = Instant.now().getEpochSecond() - 300;
+        final var startTime = Instant.now().getEpochSecond() - 120;
 
         final var devices = repository.getDevicesInfoInRange(startTime, endTime);
         final var consumptions = process(devices);
@@ -63,6 +63,7 @@ public class DailyConsumptionProcessor {
         }
 
         return DailyConsumptionEntity.builder()
+                .setSk(Instant.now().getEpochSecond())
                 .setElectricityConsumption(electricityConsumption)
                 .setGasConsumption(gasConsumption)
                 .setWaterConsumption(waterConsumption)

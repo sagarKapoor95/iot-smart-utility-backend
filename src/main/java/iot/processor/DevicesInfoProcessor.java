@@ -22,7 +22,7 @@ public class DevicesInfoProcessor {
     private final DevicesInfoRepository repository;
     private final NotificationTask notificationTask;
     private static int processTimeWindowInSeconds = 60;
-    private static int gasPressure = 10;
+    private static int gasPressure = 2;
     private static int gasTemperature = 50;
     private static int gasVelocity = 20;
     private static int electricityVoltage = 230;
@@ -93,8 +93,10 @@ public class DevicesInfoProcessor {
         int gasPressureBool = 0;
         int gasTemperatureBool = 0;
         int gasVelocityBool = 0;
+        int waterLeakage = 0;
 
 
+        int totalWaterLeakage = 0;
         int totalGasEvents = 0;
         int totalEvents = 0;
 
@@ -117,8 +119,8 @@ public class DevicesInfoProcessor {
                     final var gasDevice = (GasMeterInfo) device;
                     totalGasEvents += 1;
                     gasLeakage += (gasDevice.getGasDetectSensor().isLeakage() ? 1 : 0);
-                    gasPressureBool += (gasDevice.getGasFlowSensor().getPressure().getValue() > gasPressure ? 1 : 0);
-                    gasTemperatureBool += (gasDevice.getGasFlowSensor().getTemperature().getValue() > gasTemperature ? 1 : 0);
+                    gasPressureBool += (gasDevice.getGasFlowSensor().getPressure().getValue() >= gasPressure ? 1 : 0);
+                    gasTemperatureBool += (gasDevice.getGasFlowSensor().getTemperature().getValue() >= gasTemperature ? 1 : 0);
                     gasVelocityBool += (gasDevice.getGasFlowSensor().getVelocity().getValue() > gasVelocity ? 1 : 0);
                     gasConsumption += gasDevice.getConsumption().getValue();
                 }
@@ -130,7 +132,9 @@ public class DevicesInfoProcessor {
 
                 if (device.getType().equals(DeviceType.WATER_METER)) {
                     final var waterMeterInfo = (WaterMeterInfo) device;
+                    totalWaterLeakage +=1;
                     waterConsumption += waterMeterInfo.getConsumption().getValue();
+                    waterLeakage += (waterMeterInfo.isLeakage() ? 1 : 0);
                 }
             }
         }
@@ -141,6 +145,7 @@ public class DevicesInfoProcessor {
                 .setElectricityVoltage(false)
                 .setGasConsumption(gasConsumption)
                 .setWaterConsumption(waterConsumption)
+                .setWaterLeakage(totalWaterLeakage == 0 ? null : (totalWaterLeakage * 100 / totalWaterLeakage) > 30)
                 .setGasLeakage(totalGasEvents == 0 ? null : (gasLeakage * 100 / totalGasEvents) > 30)
                 .setGasPressure(totalGasEvents == 0 ? null : (gasPressureBool * 100 / totalGasEvents) > 30)
                 .setGasTemperature(totalGasEvents == 0 ? null : (gasTemperatureBool * 100 / totalGasEvents) > 30)

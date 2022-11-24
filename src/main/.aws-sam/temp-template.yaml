@@ -4,7 +4,7 @@ Resources:
     Properties:
       Timeout: 300
       MemorySize: 1088
-      Handler: iot.lambdaFunctions.DeviceInfoProcessorController
+      Handler: iot.lambdaFunctions.GetAllDevicesController
       CodeUri: /Users/sagarkpr/IdeaProjects/iot-smart-utility-backend
       Runtime: java11
       Architectures:
