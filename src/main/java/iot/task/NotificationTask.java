@@ -43,6 +43,20 @@ public class NotificationTask {
         return sendComms(title, description, token);
     }
 
+    public String sendWaterLeakageEventComms(String token) {
+        final var title = "Leakage Detected";
+        final var description = "Water Leakage detected";
+
+        return sendComms(title, description, token);
+    }
+
+    public String sendThresholdBreachedEventsComms(String type, String token) {
+        final var title = "Resource Utilization Plan";
+        final var description = "Reminder! You have used more than 90% of usage for " + type;
+
+        return sendComms(title, description, token);
+    }
+
     /**
      * Send comms string.
      *

@@ -1,6 +1,5 @@
 package iot.service;
 
-import iot.bo.DevicesInfo;
 import iot.bo.ElectricityMeterInfo;
 import iot.bo.GasMeterInfo;
 import iot.bo.WaterMeterInfo;
