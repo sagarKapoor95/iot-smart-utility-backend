@@ -65,4 +65,6 @@ public final class constant {
      * The constant USER_NAME.
      */
     public static String USER_NAME = "syed";
+
+    public static String COMMS_TOKEN = "";
 }

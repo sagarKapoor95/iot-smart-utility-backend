@@ -15,5 +15,9 @@ public enum EventType {
     /**
      * Plan threshold event type.
      */
-    PLAN_THRESHOLD_BREACH
+    PLAN_THRESHOLD_BREACH,
+    /**
+     * Water leakage event type.
+     */
+    WATER_LEAKAGE
 }
