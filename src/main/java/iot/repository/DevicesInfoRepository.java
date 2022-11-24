@@ -55,7 +55,8 @@ public class DevicesInfoRepository {
     public IndicatorStateEntity saveIndicatorStatus(IndicatorStateEntity indicatorStateEntity) {
         final var item = new Item()
                 .withPrimaryKey("pk", indicatorStateEntity.getPk(), "sk", indicatorStateEntity.getSk())
-                .withBoolean("gas_leakage",indicatorStateEntity.isGasLeakage())
+                .withBoolean("gas_leakage", indicatorStateEntity.isGasLeakage())
+                .withBoolean("water_leakage", indicatorStateEntity.isWaterLeakage())
                 .withBoolean("gas_pressure", indicatorStateEntity.isGasPressure())
                 .withBoolean("gas_temperature", indicatorStateEntity.isGasTemperature())
                 .withBoolean("gas_velocity", indicatorStateEntity.isGasVelocity())
@@ -77,7 +78,8 @@ public class DevicesInfoRepository {
 
         QuerySpec query = new QuerySpec()
                 .withHashKey("pk", INDICATOR_STATUS_KEY)
-                .withRangeKeyCondition(condition);
+                .withRangeKeyCondition(condition)
+                .withScanIndexForward(false);
 
         query.setMaxResultSize(size);
 
@@ -106,7 +108,8 @@ public class DevicesInfoRepository {
 
         QuerySpec query = new QuerySpec()
                 .withHashKey("pk", DAILY_CONSUMPTION_KEY)
-                .withRangeKeyCondition(condition);
+                .withRangeKeyCondition(condition)
+                .withScanIndexForward(false);
 
         query.setMaxResultSize(limit);
 

@@ -16,6 +16,7 @@ public class DailyConsumptionEntity {
     private final Double electricityConsumption;
     private final Double waterConsumption;
     private final Double gasConsumption;
+    private final Long sk;
 
     /**
      * Instantiates a new Daily consumption entity.
@@ -26,6 +27,7 @@ public class DailyConsumptionEntity {
         this.electricityConsumption = builder.electricityConsumption;
         this.waterConsumption = builder.waterConsumption;
         this.gasConsumption = builder.gasConsumption;
+        this.sk = builder.sk;
     }
 
     public String getPk() {
@@ -33,7 +35,7 @@ public class DailyConsumptionEntity {
     }
 
     public String getSk() {
-        return TIMESTAMP_KEY_PREFIX + Instant.now().getEpochSecond();
+        return TIMESTAMP_KEY_PREFIX + this.sk.toString();
     }
 
     /**
@@ -80,6 +82,7 @@ public class DailyConsumptionEntity {
         private Double electricityConsumption;
         private Double waterConsumption;
         private Double gasConsumption;
+        private Long sk;
 
         private Builder() {
         }
@@ -92,6 +95,11 @@ public class DailyConsumptionEntity {
          */
         public Builder setElectricityConsumption(Double electricityConsumption) {
             this.electricityConsumption = electricityConsumption;
+            return this;
+        }
+
+        public Builder setSk(Long sk) {
+            this.sk = sk;
             return this;
         }
 

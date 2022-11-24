@@ -1,8 +1,12 @@
 package iot.service;
 
 import iot.bo.DevicesInfo;
+import iot.bo.ElectricityMeterInfo;
+import iot.bo.GasMeterInfo;
+import iot.bo.WaterMeterInfo;
 import iot.converter.DeviceInfoConverter;
 import iot.entity.DeviceInfoEntity;
+import iot.entity.DevicesInfoEntity;
 import iot.enums.DeviceType;
 import iot.exception.CentralHubNotFoundException;
 import iot.exception.DeviceNotFoundException;
@@ -11,7 +15,7 @@ import iot.request.RegisterDeviceRequest;
 import iot.request.UpdateDeviceRequest;
 import iot.response.DeviceDetailsResponse;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
@@ -88,8 +92,9 @@ public class DeviceService {
      * @param deviceId the device id
      * @return the device info entity
      */
-    public DeviceDetailsResponse getDevice(String deviceId){
+    public DeviceDetailsResponse getDevice(String deviceId) {
         final var deviceInfo = deviceInfoRepository.getDeviceInfo(deviceId);
+        final var currentTime = Instant.now().getEpochSecond();
         List<Double> consumptions = Arrays.asList(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         if (deviceInfo == null) {
@@ -102,8 +107,16 @@ public class DeviceService {
         var indicatorDetails = devicesInfoRepository.getIndicatorsState(1);
         var dailyConsumption = devicesInfoRepository.getConsumptions(7);
 
+        var remainingConsumption = 0.0;
+
+        if (dailyConsumption.size() > 0) {
+            final var startTime = Long.valueOf(dailyConsumption.get(0).getSk().split("#")[1]);
+            final var remaining =
+                    devicesInfoRepository.getDevicesInfoInRange(startTime, currentTime);
+            remainingConsumption = calcConsumption(remaining, deviceInfo.getType());
+        }
         int size = 7;
-        for (var consumption: dailyConsumption) {
+        for (var consumption : dailyConsumption) {
             size--;
             if (deviceInfo.getType().equals(DeviceType.ELECTRICITY_METER)) {
                 consumptions.set(size, consumption.getElectricityConsumption());
@@ -112,7 +125,12 @@ public class DeviceService {
             } else if (deviceInfo.getType().equals(DeviceType.GAS_METER)) {
                 consumptions.set(size, consumption.getGasConsumption());
             }
+
+            if (size == 6) {
+                consumptions.set(size, consumptions.get(size) + remainingConsumption);
+            }
         }
+
         return DeviceDetailsResponse.builder()
                 .setDailyConsumption(consumptions)
                 .setPlan(planDetails)
@@ -120,5 +138,33 @@ public class DeviceService {
                 .setIndicatorStateEntity((indicatorDetails == null || indicatorDetails.size() == 0)
                         ? null : indicatorDetails.get(0))
                 .build();
+    }
+
+    private Double calcConsumption(List<DevicesInfoEntity> devicesInfos, DeviceType type) {
+        Double consumption = 0.0;
+
+        for (final var deviceInfo : devicesInfos) {
+            if (deviceInfo.getDevicesInfo() == null) {
+                continue;
+            }
+
+            for (final var device : deviceInfo.getDevicesInfo().getDevices()) {
+                if (device == null) {
+                    continue;
+                }
+
+                if (device.getType().equals(DeviceType.GAS_METER) && device.getType().equals(type)) {
+                    final var gasDevice = (GasMeterInfo) device;
+                    consumption += gasDevice.getConsumption().getValue();
+                }else if (device.getType().equals(DeviceType.ELECTRICITY_METER) && device.getType().equals(type)) {
+                    final var electricityMeterInfo = (ElectricityMeterInfo) device;
+                    consumption += electricityMeterInfo.getConsumption().getValue();
+                } else if (device.getType().equals(DeviceType.WATER_METER) && device.getType().equals(type)) {
+                    final var waterMeterInfo = (WaterMeterInfo) device;
+                    consumption += waterMeterInfo.getConsumption().getValue();
+                }
+            }
+        }
+        return consumption;
     }
 }
