@@ -1,6 +1,7 @@
 package iot.task;
 
 import com.amazonaws.util.json.JSONObject;
+import com.google.firebase.messaging.Message;
 import iot.lib.FCMLib;
 /**
  * The type Notification task.
@@ -67,15 +68,12 @@ public class NotificationTask {
      */
     public String sendComms(String title, String description, String token) {
         try {
-            JSONObject message = new JSONObject();
-            message.put("to", token);
-            message.put("priority", "high");
+            Message message = Message.builder()
+                    .putData("title", title)
+                    .putData("body", description)
+                    .setToken(token).build();
 
-            JSONObject notification = new JSONObject();
-            notification.put("title", title);
-            notification.put("body", description);
-            message.put("notification", notification);
-            return client.sendRequest(message.toString());
+            return client.sendRequest(message);
         } catch (Exception e) {
             e.printStackTrace();
         }

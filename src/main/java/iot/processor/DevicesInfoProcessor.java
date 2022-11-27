@@ -10,7 +10,6 @@ import iot.enums.DeviceType;
 import iot.enums.EventType;
 import iot.lib.FCMLib;
 import iot.repository.DevicesInfoRepository;
-import iot.request.FCMRequest;
 import iot.task.NotificationTask;
 
 import java.time.Instant;
@@ -53,7 +52,7 @@ public class DevicesInfoProcessor {
         try {
             if (!indicatorState.isSystemActive()) {
                 final var oldEvent = repository.getCommsEvent(EventType.CENTRAL_HUB_DOWN);
-                if (oldEvent != null && (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
+                if (oldEvent == null || (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
                     final var response= notificationTask.sendCentralHubDownEventComm(token);
 
                     final var entity = CommsEntity.builder()
@@ -69,7 +68,7 @@ public class DevicesInfoProcessor {
 
             if (indicatorState.isGasLeakage()) {
                 final var oldEvent = repository.getCommsEvent(EventType.GAS_LEAKAGE);
-                if (oldEvent != null && (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
+                if (oldEvent == null || (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
                     final var response = notificationTask.sendGasLeakageEventComms(token);
 
                     final var entity = CommsEntity.builder()
@@ -85,7 +84,7 @@ public class DevicesInfoProcessor {
 
             if (indicatorState.isWaterLeakage()) {
                 final var oldEvent = repository.getCommsEvent(EventType.WATER_LEAKAGE);
-                if (oldEvent != null && (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
+                if (oldEvent == null || (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
                     final var response = notificationTask.sendWaterLeakageEventComms(token);
 
                     final var entity = CommsEntity.builder()
@@ -148,7 +147,7 @@ public class DevicesInfoProcessor {
 
                 if (device.getType().equals(DeviceType.WATER_METER)) {
                     final var waterMeterInfo = (WaterMeterInfo) device;
-                    totalWaterEvents +=1;
+                    totalWaterEvents += 1;
                     waterConsumption += waterMeterInfo.getConsumption().getValue();
                     waterLeakage += (waterMeterInfo.isLeakage() ? 1 : 0);
                 }

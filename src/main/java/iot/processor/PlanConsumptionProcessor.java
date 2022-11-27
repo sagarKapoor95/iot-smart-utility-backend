@@ -10,6 +10,7 @@ import iot.entity.ResourceUtilizationPlanEntity;
 import iot.enums.DeviceType;
 import iot.enums.EventType;
 import iot.enums.PlanType;
+import iot.lib.FCMLib;
 import iot.repository.DevicesInfoRepository;
 import iot.repository.ResourceUtilizationPlanRepository;
 import iot.request.FCMRequest;
@@ -30,11 +31,10 @@ public class PlanConsumptionProcessor {
 
 
     public PlanConsumptionProcessor(CentralIoTHubService centralIoTHubService,
-                                    DevicesInfoRepository devicesInfoRepository,
-                                    NotificationTask notificationTask) {
+                                    DevicesInfoRepository devicesInfoRepository) {
         this.centralIoTHubService = centralIoTHubService;
         this.devicesInfoRepository = devicesInfoRepository;
-        this.notificationTask = notificationTask;
+        this.notificationTask = new NotificationTask(new FCMLib());;
     }
 
     public void processData() {
@@ -62,7 +62,7 @@ public class PlanConsumptionProcessor {
         try {
             if ((planEntity.getConsumption() * 100) / planEntity.getTotalUnit() > 90) {
                 final var oldEvent = devicesInfoRepository.getCommsEvent(EventType.PLAN_THRESHOLD_BREACH);
-                if (oldEvent != null && (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
+                if (oldEvent == null || (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
                     final var response =
                             notificationTask.sendThresholdBreachedEventsComms(planEntity.getType().name(), token);
 
