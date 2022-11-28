@@ -1,6 +1,5 @@
 package iot.task;
 
-import com.amazonaws.util.json.JSONObject;
 import com.google.firebase.messaging.Message;
 import iot.lib.FCMLib;
 /**
