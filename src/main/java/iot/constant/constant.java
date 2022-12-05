@@ -66,6 +66,4 @@ public final class constant {
      */
     public static String USER_NAME = "syed";
 
-    public static String COMMS_TOKEN =
-            "fj6elngVSmanooVDEJ-bv8:APA91bHnnvU0-NAeMnJ2Ia6s5Q-sHVfHQCRgl57JMt90JyUbSety6XKftr8K9j2_fSz03dlBiMYcewb4nvPbWBPdAFNUSuxrmBEy78lXF3UmCH2oNT4-EAWqO-XdEzjTpRtdY_epPpgU";
-}
+    }

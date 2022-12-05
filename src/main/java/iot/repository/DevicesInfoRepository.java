@@ -8,10 +8,7 @@ import iot.bo.DevicesInfo;
 import iot.converter.DailyConsumptionsConverter;
 import iot.converter.DeviceInfoConverter;
 import iot.converter.IndicatorStatusConverter;
-import iot.entity.CommsEntity;
-import iot.entity.DailyConsumptionEntity;
-import iot.entity.DevicesInfoEntity;
-import iot.entity.IndicatorStateEntity;
+import iot.entity.*;
 import iot.enums.EventType;
 import iot.utility.JsonUtil;
 
@@ -50,6 +47,18 @@ public class DevicesInfoRepository {
 
         table.putItem(item);
         return entity;
+    }
+
+    public DeviceTokenEntity getDeviceToken() {
+        final var item =
+                table.getItem("pk", "DEVICE_TOKEN", "sk", "DEVICE_TOKEN");
+
+        if (item == null) {
+            return null;
+        }
+
+        return DeviceTokenEntity.builder().setDeviceToken(item.getString("token")).build();
+
     }
 
     public IndicatorStateEntity saveIndicatorStatus(IndicatorStateEntity indicatorStateEntity) {
@@ -122,13 +131,16 @@ public class DevicesInfoRepository {
 
     public CommsEntity saveCommsEvent(CommsEntity entity) {
 
-        final var item = new Item()
+        var item = new Item()
                 .withPrimaryKey("pk", entity.getPk(), "sk", entity.getSk())
                 .withString("type",entity.getType().name())
-                .withString("response", entity.getCommsResponse())
                 .withString("user_id", entity.getUserId())
                 .withString("token", entity.getToken())
                 .withLong("ts", entity.getTimestamp());
+
+        if (entity.getCommsResponse() != null) {
+            item = item.withString("response", entity.getCommsResponse());
+        }
 
         table.putItem(item);
         return entity;

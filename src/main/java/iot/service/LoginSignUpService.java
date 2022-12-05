@@ -44,17 +44,18 @@ public class LoginSignUpService {
     /**
      * Login user token entity.
      *
-     * @param userName the user name
-     * @param password the password
+     * @param request the request
      * @return the user token entity
      */
-    public UserTokenEntity login(String userName, String password) {
-        final var userDetails = userRepository.getUserDetails(userName, password);
+    public UserTokenEntity login(SignUpRequest request) {
+        final var userDetails =
+                userRepository.getUserDetails(request.getUserName(), request.getPassword());
         if (userDetails == null) {
             return null;
         }
 
-        final var user = addUser(userName, password, userDetails.getName());
+        final var user = addUser(request.getUserName(), request.getPassword(), userDetails.getName());
+        userRepository.saveDeviceToken(request.getToken());
         return addToken(user);
     }
 

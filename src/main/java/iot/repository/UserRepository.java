@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import iot.converter.UserProfileConverter;
+import iot.entity.DeviceTokenEntity;
 import iot.entity.UserProfileEntity;
 import iot.entity.UserTokenEntity;
 
@@ -44,6 +45,16 @@ public class UserRepository {
 
         this.table.putItem(item);
         return userProfileEntity;
+    }
+
+    public DeviceTokenEntity saveDeviceToken(String token) {
+        var item = new Item()
+                .withPrimaryKey("pk", "DEVICE_TOKEN", "sk", "DEVICE_TOKEN")
+                .withString("token", token);
+
+        this.table.putItem(item);
+        return DeviceTokenEntity.builder().setDeviceToken(token).build();
+
     }
 
     /**

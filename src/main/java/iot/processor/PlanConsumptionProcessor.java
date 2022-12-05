@@ -21,7 +21,6 @@ import javax.management.timer.Timer;
 import java.time.Instant;
 import java.util.List;
 
-import static iot.constant.constant.COMMS_TOKEN;
 import static iot.constant.constant.USER_NAME;
 
 public class PlanConsumptionProcessor {
@@ -49,7 +48,7 @@ public class PlanConsumptionProcessor {
                             calculateConsumptionBasedOnPlan(plan, device.getMeterInfo().getType());
                     final var entity =
                             centralIoTHubService.updateResourceUtilizationPlanEntity(updatedPlan);
-                    sendComms(entity);
+                    sendComms(entity, device.getMeterInfo().getType());
                 }
             }
         } catch (Exception e) {
@@ -57,19 +56,39 @@ public class PlanConsumptionProcessor {
         }
     }
 
-    private void sendComms(ResourceUtilizationPlanEntity planEntity) {
-        final var token = COMMS_TOKEN;
+    private String getType(DeviceType type) {
+        if (type.equals(DeviceType.GAS_METER)) {
+            return "gas meter";
+        }
+
+        if (type.equals(DeviceType.ELECTRICITY_METER)) {
+            return "electricity meter";
+        }
+
+        if (type.equals(DeviceType.WATER_METER)) {
+            return "water meter";
+        }
+
+        return "";
+    }
+
+    private void sendComms(ResourceUtilizationPlanEntity planEntity, DeviceType type) {
+        final var deviceToken = devicesInfoRepository.getDeviceToken();
+        if(deviceToken == null) {
+            return;
+        }
         try {
             if ((planEntity.getConsumption() * 100) / planEntity.getTotalUnit() > 90) {
                 final var oldEvent = devicesInfoRepository.getCommsEvent(EventType.PLAN_THRESHOLD_BREACH);
-                if (oldEvent == null || (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
+                if (oldEvent == null || (oldEvent.getTimestamp()  < (Instant.now().getEpochSecond() - 3600))) {
                     final var response =
-                            notificationTask.sendThresholdBreachedEventsComms(planEntity.getType().name(), token);
+                            notificationTask.sendThresholdBreachedEventsComms(getType(type),
+                                    deviceToken.getDeviceToken());
 
                     final var entity = CommsEntity.builder()
                             .setCommsResponse(response)
                             .setUserId(USER_NAME)
-                            .setToken(token)
+                            .setToken(deviceToken.getDeviceToken())
                             .setEventType(EventType.PLAN_THRESHOLD_BREACH)
                             .setTimestamp(Instant.now().getEpochSecond())
                             .build();
