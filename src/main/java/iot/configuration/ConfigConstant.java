@@ -17,11 +17,11 @@ public final class ConfigConstant {
     /**
      * The constant ACCESS_KEY.
      */
-    public static final String ACCESS_KEY = "AKIAYM7OOCUZQONYFBWB";
+    public static final String ACCESS_KEY = "Test";
     /**
      * The constant SECRET_KEY.
      */
-    public static final String SECRET_KEY = "pIYC4zEQUG/UoOvmsxEdRr1y8UoFncEz9wLZLGUN";
+    public static final String SECRET_KEY = "Test";
     /**
      * The constant AWS_DYNAMODB_URL.
      */

@@ -10,12 +10,12 @@ import iot.enums.DeviceType;
 import iot.enums.EventType;
 import iot.lib.FCMLib;
 import iot.repository.DevicesInfoRepository;
+import iot.repository.UserRepository;
 import iot.task.NotificationTask;
 
 import java.time.Instant;
 import java.util.List;
 
-import static iot.constant.constant.COMMS_TOKEN;
 import static iot.constant.constant.USER_NAME;
 
 public class DevicesInfoProcessor {
@@ -48,17 +48,20 @@ public class DevicesInfoProcessor {
     }
 
     private void sendComms(IndicatorStateEntity indicatorState) {
-        final var token = COMMS_TOKEN;
+        final var deviceToken = repository.getDeviceToken();
+        if(deviceToken == null) {
+            return;
+        }
         try {
             if (!indicatorState.isSystemActive()) {
                 final var oldEvent = repository.getCommsEvent(EventType.CENTRAL_HUB_DOWN);
-                if (oldEvent == null || (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
-                    final var response= notificationTask.sendCentralHubDownEventComm(token);
+                if (oldEvent == null || (oldEvent.getTimestamp()  < (Instant.now().getEpochSecond() - 3600))) {
+                    final var response= notificationTask.sendCentralHubDownEventComm(deviceToken.getDeviceToken());
 
                     final var entity = CommsEntity.builder()
                             .setCommsResponse(response)
                             .setUserId(USER_NAME)
-                            .setToken(token)
+                            .setToken(deviceToken.getDeviceToken())
                             .setEventType(EventType.CENTRAL_HUB_DOWN)
                             .setTimestamp(Instant.now().getEpochSecond())
                             .build();
@@ -68,13 +71,13 @@ public class DevicesInfoProcessor {
 
             if (indicatorState.isGasLeakage()) {
                 final var oldEvent = repository.getCommsEvent(EventType.GAS_LEAKAGE);
-                if (oldEvent == null || (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
-                    final var response = notificationTask.sendGasLeakageEventComms(token);
+                if (oldEvent == null || (oldEvent.getTimestamp()  < (Instant.now().getEpochSecond() - 3600))) {
+                    final var response = notificationTask.sendGasLeakageEventComms(deviceToken.getDeviceToken());
 
                     final var entity = CommsEntity.builder()
                             .setCommsResponse(response)
                             .setUserId(USER_NAME)
-                            .setToken(token)
+                            .setToken(deviceToken.getDeviceToken())
                             .setEventType(EventType.GAS_LEAKAGE)
                             .setTimestamp(Instant.now().getEpochSecond())
                             .build();
@@ -84,13 +87,13 @@ public class DevicesInfoProcessor {
 
             if (indicatorState.isWaterLeakage()) {
                 final var oldEvent = repository.getCommsEvent(EventType.WATER_LEAKAGE);
-                if (oldEvent == null || (oldEvent.getTimestamp() + 3600 < Instant.now().getEpochSecond())) {
-                    final var response = notificationTask.sendWaterLeakageEventComms(token);
+                if (oldEvent == null ||(oldEvent.getTimestamp()  < (Instant.now().getEpochSecond() - 3600))) {
+                    final var response = notificationTask.sendWaterLeakageEventComms(deviceToken.getDeviceToken());
 
                     final var entity = CommsEntity.builder()
                             .setCommsResponse(response)
                             .setUserId(USER_NAME)
-                            .setToken(token)
+                            .setToken(deviceToken.getDeviceToken())
                             .setEventType(EventType.WATER_LEAKAGE)
                             .setTimestamp(Instant.now().getEpochSecond())
                             .build();
@@ -160,11 +163,11 @@ public class DevicesInfoProcessor {
                 .setElectricityVoltage(false)
                 .setGasConsumption(gasConsumption)
                 .setWaterConsumption(waterConsumption)
-                .setWaterLeakage(totalWaterEvents == 0 ? null : (waterLeakage * 100 / totalWaterEvents) > 30)
-                .setGasLeakage(totalGasEvents == 0 ? null : (gasLeakage * 100 / totalGasEvents) > 30)
-                .setGasPressure(totalGasEvents == 0 ? null : (gasPressureBool * 100 / totalGasEvents) > 30)
-                .setGasTemperature(totalGasEvents == 0 ? null : (gasTemperatureBool * 100 / totalGasEvents) > 30)
-                .setGasVelocity(totalGasEvents == 0 ? null : (gasVelocityBool * 100 / totalGasEvents) > 30)
+                .setWaterLeakage(totalWaterEvents == 0 ? false : (waterLeakage * 100 / totalWaterEvents) > 30)
+                .setGasLeakage(totalGasEvents == 0 ? false : (gasLeakage * 100 / totalGasEvents) > 30)
+                .setGasPressure(totalGasEvents == 0 ? false : (gasPressureBool * 100 / totalGasEvents) > 30)
+                .setGasTemperature(totalGasEvents == 0 ? false : (gasTemperatureBool * 100 / totalGasEvents) > 30)
+                .setGasVelocity(totalGasEvents == 0 ? false : (gasVelocityBool * 100 / totalGasEvents) > 30)
                 .build();
     }
 }

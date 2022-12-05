@@ -11,6 +11,7 @@ public class SignUpRequest {
     private final String userName;
     private final String password;
     private final String name;
+    private final String token;
 
     /**
      * Instantiates a new Sign up request.
@@ -21,6 +22,11 @@ public class SignUpRequest {
         this.userName = builder.userName;
         this.password = builder.password;
         this.name = builder.name;
+        this.token = builder.token;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     /**
@@ -66,6 +72,7 @@ public class SignUpRequest {
     public static final class Builder {
         private String userName;
         private String password;
+        private String token;
         private String name;
 
         private Builder() {
@@ -79,6 +86,11 @@ public class SignUpRequest {
          */
         public Builder setUserName(String userName) {
             this.userName = userName;
+            return this;
+        }
+
+        public Builder setToken(String token) {
+            this.token = token;
             return this;
         }
 

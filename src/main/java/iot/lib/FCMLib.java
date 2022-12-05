@@ -18,6 +18,7 @@ public class FCMLib {
 
     private void init() {
         try {
+
             ClassLoader classLoader = getClass().getClassLoader();
             File cityFile = new File(classLoader.getResource("service-account.json").getFile());
             FileInputStream refreshToken = new FileInputStream(cityFile);
@@ -37,7 +38,7 @@ public class FCMLib {
             return FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+           return "";
         }
     }
 }

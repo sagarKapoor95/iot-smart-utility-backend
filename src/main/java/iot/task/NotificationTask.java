@@ -70,7 +70,8 @@ public class NotificationTask {
             Message message = Message.builder()
                     .putData("title", title)
                     .putData("body", description)
-                    .setToken(token).build();
+                    .setToken(token)
+                    .build();
 
             return client.sendRequest(message);
         } catch (Exception e) {
